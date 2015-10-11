@@ -4,7 +4,8 @@ using System.IO;
 
 public class NeuroEvolution : MonoBehaviour {
 
-    private string sceneStateFileName = "rtNEAT.1.0.2\\sceneState";
+    private string NNInputFileName = "rtNEAT.1.0.2\\NNinput";
+    private string NNOutputFileName = "rtNEAT.1.0.2\\NNoutput";
 
 	// Use this for initialization
 	void Start () {
@@ -13,12 +14,28 @@ public class NeuroEvolution : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        writeSceneState();
+        writeNNInput();
 	}
 
-    void writeSceneState()
+    void readNNOutput()
+    {
+        var reader = new StreamReader(File.OpenRead(NNOutputFileName));
+        for (int output = 0; !reader.EndOfStream; output++)
+        {
+            var line = reader.ReadLine();
+            var values = line.Split(',');
+            GameObject.Find("Agent").GetComponent<Agent>().outputArray
+        }
+    }
+    void writeNNInput()
     {
         string lines = "";
-        File.WriteAllText(sceneStateFileName, lines);
+        float[] inputArray = GameObject.Find("Agent").GetComponent<Agent>().inputArray;
+        foreach (float input in inputArray)
+        {
+            lines += input + ",";
+        }
+        lines += "\n";
+        File.WriteAllText(NNInputFileName, lines);
     }
 }
