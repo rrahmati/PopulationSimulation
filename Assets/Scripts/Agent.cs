@@ -60,7 +60,7 @@ public class Agent : MonoBehaviour {
 			                                 Mathf.Round(transform.position.y),
 			                                 Mathf.Round(transform.position.z));
 			transform.Rotate(new Vector3(0,0,1));
-		}
+	 }
 
 		// need at least a raycast
 		numRaycast = Mathf.Max (numRaycast, 1);
