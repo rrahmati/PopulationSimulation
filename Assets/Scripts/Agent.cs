@@ -128,37 +128,38 @@ public class Agent : MonoBehaviour {
 				}
 
 
-				Debug.Log("ID#: " + ID + " Ray#: " + i + " Tag: " + hits[i].transform.gameObject.tag);
-				switch(hits[i].transform.gameObject.tag){
-				case "Wall":
-					inputArray[(index)+2] = 0;
-					inputArray[(index)+3] = 1;
-					inputArray[(index)+4] = 0;
-					break;
-				case "Food":
-					inputArray[(index)+2] = 1;
-					inputArray[(index)+3] = 0;
-					inputArray[(index)+4] = 0;
-					break;
-				case "Agent":
-					inputArray[(index)+2] = 1;
-					inputArray[(index)+3] = 1;
+                //Debug.Log("ID#: " + ID + " Ray#: " + i + " Tag: " + hits[i].transform.gameObject.tag);
+                //switch (hits[i].transform.gameObject.tag)
+                //{
+                //    case "Wall":
+                //        inputArray[(index) + 2] = 0;
+                //        inputArray[(index) + 3] = 1;
+                //        inputArray[(index) + 4] = 0;
+                //        break;
+                //    case "Food":
+                //        inputArray[(index) + 2] = 1;
+                //        inputArray[(index) + 3] = 0;
+                //        inputArray[(index) + 4] = 0;
+                //        break;
+                //    case "Agent":
+                //        inputArray[(index) + 2] = 1;
+                //        inputArray[(index) + 3] = 1;
 
-					// lower food level mean higher activation value
-					Agent other = (hits[i].transform.gameObject).GetComponent<Agent>();
-					inputArray[(index)+4] = (foodMaxLevel - other.foodLevel) / foodMaxLevel;
+                //        // lower food level mean higher activation value
+                //        Agent other = (hits[i].transform.gameObject).GetComponent<Agent>();
+                //        inputArray[(index) + 4] = (foodMaxLevel - other.foodLevel) / foodMaxLevel;
 
-					// if output is to give away food, than give food away
-					if(outputArray[i] == 1)
-						GiveFood(other);
+                //        // if output is to give away food, than give food away
+                //        if (outputArray[i] == 1)
+                //            GiveFood(other);
 
-					break;
-				default:
-					inputArray[(index)+2] = 0;
-					inputArray[(index)+3] = 0;
-					inputArray[(index)+4] = 0;
-					break;
-				}
+                //        break;
+                //    default:
+                //        inputArray[(index) + 2] = 0;
+                //        inputArray[(index) + 3] = 0;
+                //        inputArray[(index) + 4] = 0;
+                //        break;
+                //}
 			}
 		}
 
@@ -167,13 +168,12 @@ public class Agent : MonoBehaviour {
 		// either a function call will get the output from ANN, or
 		// outputArray will be update by ANN from somewhere else
 
-
 		// perform output behavior
 		if (outputArray [numRaycast + 0] > 0)
 			TurnLeft ();
 		if (outputArray [numRaycast + 1] > 0)
 			TurnRight ();
-		if (outputArray [numRaycast + 2] > 0)
+        if (outputArray[numRaycast + 2] > 0)
 			MoveFoward ();
 		if (outputArray [numRaycast + 3] > 0)
 			MoveBackward ();
@@ -209,6 +209,7 @@ public class Agent : MonoBehaviour {
 
 	void MoveFoward(){
 		//transform.position += transform.forward * moveSpeed * Time.deltaTime;
+        print("hi");
 		Move (transform.forward);
 	}
 	void MoveBackward(){

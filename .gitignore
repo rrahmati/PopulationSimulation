@@ -12,6 +12,7 @@ learning/trajectories
 learning/predictions
 rtNEAT.1.0.2/Debug
 rtNEAT.1.0.2/.settings
+Assets/Plugins
  
 *.csproj
 *.unityproj
@@ -83,3 +84,4 @@ ProjectSettings/ProjectSettings.asset
 learning/.project
 learning/.pydevproject
 learning/model
+rtNEAT.1.0.2/NNinput

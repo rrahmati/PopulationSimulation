@@ -14,6 +14,7 @@ public class NeuroEvolution : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        readNNOutput();
         writeNNInput();
 	}
 
@@ -27,6 +28,7 @@ public class NeuroEvolution : MonoBehaviour {
         {
             outputArray[output] = int.Parse(values[output]);
         }
+        print(outputArray);
     }
     void writeNNInput()
     {
