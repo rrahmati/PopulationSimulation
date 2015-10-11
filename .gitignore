@@ -10,6 +10,8 @@ playback/
 learning/models
 learning/trajectories
 learning/predictions
+rtNEAT.1.0.2/Debug
+rtNEAT.1.0.2/.settings
  
 *.csproj
 *.unityproj
@@ -17,6 +19,10 @@ learning/predictions
 *.user
 *.userprefs
 *.DS_store
+*.o
+*.project
+*.cproject
+*.stackdump
 
 # Windows image file caches
 Thumbs.db
