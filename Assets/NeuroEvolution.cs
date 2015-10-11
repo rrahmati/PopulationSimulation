@@ -20,11 +20,12 @@ public class NeuroEvolution : MonoBehaviour {
     void readNNOutput()
     {
         var reader = new StreamReader(File.OpenRead(NNOutputFileName));
-        for (int output = 0; !reader.EndOfStream; output++)
+        var line = reader.ReadLine();
+        var values = line.Split(',');
+        int[] outputArray = GameObject.Find("Agent").GetComponent<Agent>().outputArray;
+        for (int output = 0; output < outputArray.Length; output++)
         {
-            var line = reader.ReadLine();
-            var values = line.Split(',');
-            GameObject.Find("Agent").GetComponent<Agent>().outputArray
+            outputArray[output] = int.Parse(values[output]);
         }
     }
     void writeNNInput()
