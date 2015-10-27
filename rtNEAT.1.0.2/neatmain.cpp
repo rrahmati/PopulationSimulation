@@ -19,6 +19,7 @@
 #include "neat.h"
 #include "population.h"
 #include "experiments.h"
+#include "game.h"
 
 using namespace std;
 
@@ -90,6 +91,7 @@ int main(int argc, char *argv[]) {
   cout<<"4 - 2-pole balancing, velocity info provided, tested using rtNEAT calls and steady-state evolution"<<endl; 
   cout<<"5 - XOR"<<endl;
   cout<<"6 - 3parity"<<endl;
+  cout<<"7 - population simulation"<<endl;
   cout<<"Number: ";
 
   cin>>choice;
@@ -113,6 +115,9 @@ int main(int argc, char *argv[]) {
       break;
     case 6:
 	  p=parity_test(250);
+	  break;
+    case 7:
+	  p=game_test(250);
 	  break;
     default:
       cout<<"Not an available option."<<endl;

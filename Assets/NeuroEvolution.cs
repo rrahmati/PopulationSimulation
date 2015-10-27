@@ -30,6 +30,7 @@ public class NeuroEvolution : MonoBehaviour {
         }
         print(outputArray);
     }
+
     void writeNNInput()
     {
         string lines = "";
