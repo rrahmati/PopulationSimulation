@@ -24,3 +24,5 @@ Population *game_test(int gens);
 bool game_evaluate(Organism *org);
 int game_epoch(Population *pop,int generation,char *filename, int &winnernum, int &winnergenes,int &winnernodes, double &fitness, int &species, int &genes);
 
+void readWriteFile();
+

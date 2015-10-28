@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.4)
 PROJECT( rtneat )
 
 SET(rtneat_sources 
+  game.cpp
   experiments.cpp
   gene.cpp
   genome.cpp
