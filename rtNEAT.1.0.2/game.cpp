@@ -28,7 +28,12 @@ double alt_penalize(double giver_old_food_level, double food_granted, double rec
 
 }
 Population *game_test(int gens) {
-	cout <<"thisi: " <<alt_penalize(14, 14, 10, 9) << endl;
+
+	cout <<"this: " <<alt_penalize(14, 14, 10, 9) << endl;
+
+
+	return 0;
+
     Population *pop=0;
     Genome *start_genome;
     char curword[20];
@@ -83,6 +88,12 @@ Population *game_test(int gens) {
       pop->verify();
 
       for (gen=1;gen<=gens;gen++) {
+		try{
+			readWriteFile();
+		} catch (...) {
+			cout << "Error reading/writing file" << endl;
+		}
+
 		cout<<"Epoch "<<gen<<endl;
 
 		//This is how to make a custom filename
@@ -331,4 +342,14 @@ int game_epoch(Population *pop,int generation,char *filename,int &winnernum,int 
   if (win) return 1;
   else return 0;
 
+}
+
+void readWriteFile() {
+	float f;
+	cout << "reading input file.";
+	ifstream iFile("NNinput",ios::in);
+	iFile>>f;
+
+	    iFile.close();
+	cout << f;
 }
