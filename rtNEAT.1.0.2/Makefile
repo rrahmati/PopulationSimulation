@@ -9,14 +9,14 @@ CC = g++ -O3
 #CFLAGS = -g -Wall -Werror
 CFLAGS = -g -Wall 
 
-rtneat: neat.o network.o nnode.o link.o trait.o gene.o genome.o innovation.o organism.o species.o population.o experiments.o neatmain.o #neatswig_wrap.o visual.o
+rtneat: neat.o game.o network.o nnode.o link.o trait.o gene.o genome.o innovation.o organism.o species.o population.o experiments.o neatmain.o #neatswig_wrap.o visual.o
 	$(CC) $(CFLAGS) $(LIBS) neat.o network.o nnode.o link.o trait.o gene.o genome.o innovation.o organism.o species.o population.o experiments.o neatmain.o -o rtneat
 #	$(CC) $(CFLAGS) $(LIBS) networks.o genetics.o visual.o experiments.o neatswig_wrap.o neatmain.o -o neat `gtkmm-config --cflags --libs`
 
 ########################
 
 neat.o: neat.cpp neat.h
-	  $(CC) $(CFLAGS) -c neat.cpp -o neat.o
+	$(CC) $(CFLAGS) -c neat.cpp -o neat.o
 
 network.o: network.cpp network.h neat.h neat.o  
 	$(CC) $(CFLAGS) -c network.cpp -o network.o
@@ -25,28 +25,29 @@ nnode.o: nnode.cpp nnode.h
 	$(CC) $(CFLAGS) -c nnode.cpp -o nnode.o
 
 link.o: link.cpp link.h
-	  $(CC) $(CFLAGS) -c link.cpp -o link.o
+	$(CC) $(CFLAGS) -c link.cpp -o link.o
 
 trait.o: trait.cpp trait.h
-	  $(CC) $(CFLAGS) -c trait.cpp -o trait.o
+	$(CC) $(CFLAGS) -c trait.cpp -o trait.o
 
 gene.o: gene.cpp gene.h
-	  $(CC) $(CFLAGS) -c gene.cpp -o gene.o
+	$(CC) $(CFLAGS) -c gene.cpp -o gene.o
 
 genome.o: genome.cpp genome.h
-	  $(CC) $(CFLAGS) -c genome.cpp -o genome.o
-
+	$(CC) $(CFLAGS) -c genome.cpp -o genome.o
+game.o: game.cpp game,h
+	$(CC) $(CFLAGS) -c game.cpp -o game.o	
 innovation.o: innovation.cpp innovation.h
-	  $(CC) $(CFLAGS) -c innovation.cpp -o innovation.o
+	$(CC) $(CFLAGS) -c innovation.cpp -o innovation.o
 
 organism.o: organism.cpp organism.h    
 	$(CC) $(CFLAGS) -c organism.cpp -o organism.o
 
 species.o: species.cpp species.h organism.h
-	  $(CC) $(CFLAGS) -c species.cpp -o species.o
+	$(CC) $(CFLAGS) -c species.cpp -o species.o
 
 population.o: population.cpp population.h organism.h
-	  $(CC) $(CFLAGS) -c population.cpp -o population.o
+	$(CC) $(CFLAGS) -c population.cpp -o population.o
 
 experiments.o: experiments.cpp experiments.h network.h species.h
 	$(CC) $(CFLAGS) -c experiments.cpp -o experiments.o
@@ -58,4 +59,4 @@ neatmain.o: neatmain.cpp neatmain.h neat.h population.h
 ########################
 
 clean:
-	rm -f neat.o network.o nnode.o link.o trait.o gene.o genome.o innovation.o organism.o species.o population.o experiments.o neatmain.o rtneat
+	rm -f neat.o game.o network.o nnode.o link.o trait.o gene.o genome.o innovation.o organism.o species.o population.o experiments.o neatmain.o rtneat

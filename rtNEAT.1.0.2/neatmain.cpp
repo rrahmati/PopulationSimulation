@@ -18,12 +18,12 @@
 #include <ctime>
 #include "neat.h"
 #include "population.h"
-#include "experiments.h"
+//#include "experiments.h"
 #include "game.h"
 
 using namespace std;
 
-
+double Hamilton_rate;
 //  double testdoubval() {
 //    return *testdoub;
 //  }
@@ -35,7 +35,8 @@ using namespace std;
 int main(int argc, char *argv[]) {
 
   //list<NNode*> nodelist;
-
+  // Global parameters:
+  Hamilton_rate = 10.; // used in game.cpp alt_penalize function
   int pause;
 
   NEAT::Population *p=0;
@@ -94,27 +95,27 @@ int main(int argc, char *argv[]) {
   cout<<"7 - population simulation"<<endl;
   cout<<"Number: ";
 
-  cin>>choice;
-
+ // cin>>choice;
+ choice = 7;
   switch ( choice )
     {
     case 1:
-      p = pole1_test(100);
+    //  p = pole1_test(100);
       break;
     case 2:
-      p = pole2_test(100,1);
+    //  p = pole2_test(100,1);
       break;
     case 3:
-      p = pole2_test(100,0);
+   //   p = pole2_test(100,0);
       break;
     case 4:
-      p = pole2_test_realtime();
+   //   p = pole2_test_realtime();
       break;
     case 5:
-      p=xor_test(100);
+   //   p=xor_test(100);
       break;
     case 6:
-	  p=parity_test(250);
+	//  p=parity_test(250);
 	  break;
     case 7:
 	  p=game_test(250);

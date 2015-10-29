@@ -1,8 +1,34 @@
 #include "game.h"
 #include <cstring>
+#include "neatmain.h"
+bool Org_fitness(Organism *org, double age, double food_gain, int wall_hit){
+     double fitness = (age * (food_gain))/wall_hit;
+     org->fitness = fitness;
+	 if(org-> fitness > 5./*win_threshold*/)
+		 return true; // recognize this org as winner
+	 return false;
 
+}
+double alt_penalize(double giver_old_food_level, double food_granted, double rec_old_food_level, double r){
+      double giver_curr_food_level = giver_old_food_level - food_granted;
+      double rec_curr_food_level = rec_old_food_level + food_granted;
+      // compute the altruism cost for this org upon this particular help
+      if(food_granted == 0.)
+    	  return 0;
+      double c = 0;
+      if(giver_curr_food_level == 0. && food_granted > 0)
+    	  c = 100000.; // this agent killed itself for that agent or was in critical point --> should not help
+      else c = 1./ giver_curr_food_level;
+      double b = 1./ (rec_curr_food_level);
+      cout << c <<" "<< r <<" " << b <<" " << c/r << " "<< Hamilton_rate << endl;
+      if(b > c/r)
+    	  return 0.; // the rule meets
 
+      return ( b - c/r ) * Hamilton_rate;
+
+}
 Population *game_test(int gens) {
+	cout <<"thisi: " <<alt_penalize(14, 14, 10, 9) << endl;
     Population *pop=0;
     Genome *start_genome;
     char curword[20];
