@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.IO;
 
 public class Agent : MonoBehaviour {
 
 	public int ID = 0;
+	public int species = 0;
 	public int foodLevel = 100;
 	public int foodMaxLevel = 100;
-	public int foodGranted = 0;
+	public int foodGaveAway = 0;
 	public int foodLevelDPS = 1;
+
+	public float lifeTime = 0;
 	private float time = 0;
 
 	public float moveSpeed = 10f;		
@@ -52,6 +56,10 @@ public class Agent : MonoBehaviour {
 	public bool died = false;
 	public bool discreetMovement = false;
 
+
+	public string NNInputFileName = "rtNEAT.1.0.2\\NNinput";
+	public string NNOutputFileName = "rtNEAT.1.0.2\\NNoutput";
+	
 	// Use this for initialization
 	void Start () {
 
@@ -60,7 +68,7 @@ public class Agent : MonoBehaviour {
 			                                 Mathf.Round(transform.position.y),
 			                                 Mathf.Round(transform.position.z));
 			transform.Rotate(new Vector3(0,0,1));
-	 }
+		}
 
 		// need at least a raycast
 		numRaycast = Mathf.Max (numRaycast, 1);
@@ -85,12 +93,16 @@ public class Agent : MonoBehaviour {
 		if (died)
 			return;
 
+		// change agent color based on the food level
+		transform.GetComponent<Renderer> ().material.color = new Color ((100.0f - foodLevel) / 100, foodLevel / 100.0f, 0);
+
 		// food level decrease over time
 		if (time > 1) {
 			foodLevel -= foodLevelDPS;
 			time--;
 		}
 		time += Time.deltaTime;
+		lifeTime += Time.deltaTime;
 
 
 		RaycastHit[] hits = new RaycastHit[numRaycast];
@@ -106,7 +118,7 @@ public class Agent : MonoBehaviour {
 
 			int index = i * inputPerRaycast;
 			// no hit? set everything related to zero
-			if(hits[i].distance < 0){
+			if(hits[i].distance <= 0){
 				inputArray[(index)+0] = 0;
 				inputArray[(index)+1] = 0;
 				inputArray[(index)+2] = 0;
@@ -182,6 +194,13 @@ public class Agent : MonoBehaviour {
 		if (outputArray [numRaycast + 5] > 0)
 			MoveRight ();
 
+
+
+		// save input to file
+		WriteNNInput ();
+		// get output from file
+		ReadNNOutput ();
+
 		if (foodLevel < 0)
 			died = true;
 	}
@@ -244,7 +263,7 @@ public class Agent : MonoBehaviour {
 	void GiveFood(Agent other){
 		int foodGiveAway = Mathf.Max(Mathf.Min (10, foodLevel), 0);
 
-		// if agent ever give away food, we really want to know
+		// if agent ever five away food, we really want to know
 		// especially if it is a self sacrifice action
 		Debug.Log ("Agent " + ID + " just give a way " + foodGiveAway + " food to Agent " + other.ID);
 		if(foodGiveAway < 10)
@@ -252,7 +271,7 @@ public class Agent : MonoBehaviour {
 
 		other.foodLevel = Mathf.Min(foodMaxLevel, other.foodLevel + foodGiveAway);
 		foodLevel -= foodGiveAway;
-		foodGranted += foodGiveAway;
+		foodGaveAway += foodGiveAway;
 	}
 
 
@@ -264,4 +283,41 @@ public class Agent : MonoBehaviour {
 		}
 	}
 
+
+	void ReadNNOutput()
+	{
+		string path = NNOutputFileName + "_" + ID;
+
+		if (!File.Exists (path))
+			return;
+
+		StreamReader reader = new StreamReader(File.OpenRead(path));
+
+		string line = reader.ReadLine();
+		string[] values = line.Split(',');
+		for (int output = 0; output < outputArray.Length; output++)
+		{
+			outputArray[output] = int.Parse(values[output]);
+		}
+		//print(outputArray);
+	}
+
+	void WriteNNInput()
+	{
+		string path = NNInputFileName + "_" + ID;
+		StreamWriter file = new StreamWriter (path);
+
+		string lines = "";
+		foreach (float input in inputArray)
+		{
+			lines += input + ",";
+		}
+		lines += "\n";
+
+		file.WriteLine (lines);
+
+		file.Close ();
+	}
+	
+	
 }
