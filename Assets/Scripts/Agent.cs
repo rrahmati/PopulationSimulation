@@ -18,15 +18,13 @@ public class Agent : MonoBehaviour {
 	public float rotateSpeed = 10f;		
 
 	public int coneDegree = 120;
-	public int numRaycast = 7;
+	public int numRaycast = 2;
 	public float rayRange = 10;
 
 
 	// Each raycast have 2 for distance, 2 for object identification
 	// and 1 for food level if the target is agent
 	// Distance:
-	// [00, 01] real number, first half of the range
-	// [10, 11] real number, remain half of the range
 	// Identification:
 	// 00 = no object
 	// 01 = wall
@@ -36,7 +34,7 @@ public class Agent : MonoBehaviour {
 	// 1 = dying
 	// 0 = healthy/not agent
 	public float[] inputArray;
-	private int inputPerRaycast = 5;
+	private int inputPerRaycast = 4;
 
 
 	// output from neural network
@@ -44,10 +42,11 @@ public class Agent : MonoBehaviour {
 	// 
 	// for numRaycast + i:
 	// where i:
-	// 0,1 turn left/right
-	// 2,3,4,5 move forward/backward/left/right
-	public int[] outputArray;
-	private int outputNum = 6;
+	// 0 turn left/right
+	// 1 move forward/backward
+    // 
+	public float[] outputArray;
+	private int outputNum = 2;
 
 
 	private Vector3[] rays;
@@ -57,8 +56,8 @@ public class Agent : MonoBehaviour {
 	public bool discreetMovement = false;
 
 
-	public string NNInputFileName = "rtNEAT.1.0.2\\NNinput";
-	public string NNOutputFileName = "rtNEAT.1.0.2\\NNoutput";
+    private string NNInputFileName = "rtNEAT.1.0.2\\in_out\\NNinput";
+    private string NNOutputFileName = "rtNEAT.1.0.2\\in_out\\NNoutput";
 	
 	// Use this for initialization
 	void Start () {
@@ -77,11 +76,13 @@ public class Agent : MonoBehaviour {
 		inputArray = new float[numRaycast*inputPerRaycast];
 
 		outputNum += numRaycast;
-		outputArray = new int[outputNum];
+		outputArray = new float[outputNum];
 
 
-		if (numRaycast <= 1)
-			return;
+		if (numRaycast <= 1) {
+			rayAngleStart = 90;
+            return;
+        }
 
 		rayAngleStart = 90 - (coneDegree / 2);
 		rayAngle = coneDegree / Mathf.Max((numRaycast - 1),1);
@@ -123,42 +124,31 @@ public class Agent : MonoBehaviour {
 				inputArray[(index)+1] = 0;
 				inputArray[(index)+2] = 0;
 				inputArray[(index)+3] = 0;
-				inputArray[(index)+4] = 0;
 			}
 			// for each raycast, determine what kind of input it is
 			else{
 				float tempDist = hits[i].distance;
-				// fill the distance inputs
-				if(tempDist > rayRange/2){
-					inputArray[(index)] = 1;
-					tempDist -= rayRange/2;
-					inputArray[(index)+1] = tempDist/rayRange;
-				}
-				else{
-					inputArray[(index)] = 0;
-					inputArray[(index)+1] = tempDist/rayRange;
-				}
-
+                inputArray[(index)] = hits[i].distance / rayRange;
 
 				Debug.Log("ID#: " + ID + " Ray#: " + i + " Tag: " + hits[i].transform.gameObject.tag);
 				switch(hits[i].transform.gameObject.tag){
 				case "Wall":
-					inputArray[(index)+2] = 0;
-					inputArray[(index)+3] = 1;
-					inputArray[(index)+4] = 0;
-					break;
-				case "Food":
+					inputArray[(index)+1] = 0;
 					inputArray[(index)+2] = 1;
 					inputArray[(index)+3] = 0;
-					inputArray[(index)+4] = 0;
+					break;
+				case "Food":
+					inputArray[(index)+1] = 1;
+					inputArray[(index)+2] = 0;
+					inputArray[(index)+3] = 0;
 					break;
 				case "Agent":
+					inputArray[(index)+1] = 1;
 					inputArray[(index)+2] = 1;
-					inputArray[(index)+3] = 1;
 
 					// lower food level mean higher activation value
 					Agent other = (hits[i].transform.gameObject).GetComponent<Agent>();
-					inputArray[(index)+4] = (foodMaxLevel - other.foodLevel) / foodMaxLevel;
+					inputArray[(index)+3] = (foodMaxLevel - other.foodLevel) / foodMaxLevel;
 
 					// if output is to give away food, than give food away
 					if(outputArray[i] == 1)
@@ -166,9 +156,9 @@ public class Agent : MonoBehaviour {
 
 					break;
 				default:
+					inputArray[(index)+1] = 0;
 					inputArray[(index)+2] = 0;
 					inputArray[(index)+3] = 0;
-					inputArray[(index)+4] = 0;
 					break;
 				}
 			}
@@ -182,17 +172,9 @@ public class Agent : MonoBehaviour {
 
 		// perform output behavior
 		if (outputArray [numRaycast + 0] > 0)
-			TurnLeft ();
+            Turn(outputArray[numRaycast + 0]);
 		if (outputArray [numRaycast + 1] > 0)
-			TurnRight ();
-		if (outputArray [numRaycast + 2] > 0)
-			MoveFoward ();
-		if (outputArray [numRaycast + 3] > 0)
-			MoveBackward ();
-		if (outputArray [numRaycast + 4] > 0)
-			MoveLeft ();
-		if (outputArray [numRaycast + 5] > 0)
-			MoveRight ();
+            MoveFB(outputArray[numRaycast + 1]);
 
 
 
@@ -206,14 +188,9 @@ public class Agent : MonoBehaviour {
 	}
 
 
-	void TurnLeft(){
-		Turn (-rotateSpeed);
-	}
-	void TurnRight(){
-		Turn (rotateSpeed);
-	}
 	void Turn(float directionSpeed){
 
+        directionSpeed *= rotateSpeed;
 		if (discreetMovement) {
 			if(directionSpeed < 0)
 				transform.Rotate (0, -90, 0);
@@ -226,36 +203,26 @@ public class Agent : MonoBehaviour {
 		transform.Rotate (0, directionSpeed * Time.deltaTime, 0);
 	}
 
-	void MoveFoward(){
-		//transform.position += transform.forward * moveSpeed * Time.deltaTime;
-		Move (transform.forward);
-	}
-	void MoveBackward(){
-		//transform.position -= transform.forward * moveSpeed * Time.deltaTime;
-		Move (-transform.forward);
-	}
-	void MoveLeft(){
-		//transform.position -= transform.right * moveSpeed * Time.deltaTime;
-		Move (-transform.right);
-	}
-	void MoveRight(){
-		//transform.position += transform.right * moveSpeed * Time.deltaTime;
-		Move (transform.right);
-	}
+    void MoveFB(float value)
+    {
+        value -= .5f;
+        Move(transform.forward * value);
+    }
+
 	void Move(Vector3 directionVector){
 		// check if there is any thing in fron of it (only short distance
 		RaycastHit hit;
 		Physics.Raycast(transform.position, transform.forward, out hit, 1);
-		// hit something?
-		if (hit.distance > 0) {
-			return;
-		}
+        //// hit something?
+        //if (hit.distance > 0) {
+        //    return;
+        //}
 
-		// no hit? move
-		if (discreetMovement) {
-			transform.position += directionVector * 1;
-			return;
-		}
+        //// no hit? move
+        //if (discreetMovement) {
+        //    transform.position += directionVector * 1;
+        //    return;
+        //}
 		transform.position += directionVector * moveSpeed * Time.deltaTime;
 	}
 	
@@ -305,6 +272,7 @@ public class Agent : MonoBehaviour {
 	void WriteNNInput()
 	{
 		string path = NNInputFileName + "_" + ID;
+        print(path);
 		StreamWriter file = new StreamWriter (path);
 
 		string lines = "";
