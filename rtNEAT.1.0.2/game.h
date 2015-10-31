@@ -27,5 +27,7 @@ int game_epoch(Population *pop,int generation,char *filename, int &winnernum, in
 bool Org_fitness(Organism *org, double age, double food_gain, int wall_hit);
 double alt_penalize(double giver_old_food_level, double food_granted, double rec_old_food_level, double r);
 void org_evaluate();
-
+int Game_realtime_loop(Population *pop);
+bool Game_evaluate(Organism *org);
+Population *Game_test_realtime();
 

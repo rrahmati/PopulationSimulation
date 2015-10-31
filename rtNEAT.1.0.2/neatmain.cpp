@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
 	//  p=parity_test(250);
 	  break;
     case 7:
-	  p=game_test(250);
+	  p=Game_test_realtime();
 	  break;
     default:
       cout<<"Not an available option."<<endl;
