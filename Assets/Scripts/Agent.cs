@@ -30,9 +30,8 @@ public class Agent : MonoBehaviour {
 	// 01 = wall
 	// 10 = food cube
 	// 11 = other agent
-	// Food level:
-	// 1 = dying
-	// 0 = healthy/not agent
+	// Food level: 1 = dying, 0 = healthy/not agent
+
 	public float[] inputArray;
 	private int inputPerRaycast = 4;
 

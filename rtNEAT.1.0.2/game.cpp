@@ -1,52 +1,85 @@
 #include "game.h"
 #include <cstring>
-#include "neatmain.h"
 
-bool Org_fitness(Organism *org, double age, double food_gain, int wall_hit){
-		 double fitness = (age * (food_gain))/wall_hit;
+bool Game::org_fitness(Organism *org, double age, double food_gain, int wall_hit) {
+	double fitness = (age * (food_gain)) / wall_hit;
 
-		 org->fitness = fitness;
-	 if(org-> fitness > 5./*win_threshold*/)
-		 return true; // recognize this org as winner
-	 return false;
-
-}
-double alt_penalize(double giver_old_food_level, double food_granted, double rec_old_food_level, double r){
-			double giver_curr_food_level = giver_old_food_level - food_granted;
-			double rec_curr_food_level = rec_old_food_level + food_granted;
-			// compute the altruism cost for this org upon this particular help
-			if(food_granted == 0.)
-				return 0;
-			double c = 0;
-			if(giver_curr_food_level == 0. && food_granted > 0)
-				c = 100000.; // this agent killed itself for that agent or was in critical point --> should not help
-			else c = 1./ giver_curr_food_level;
-			double b = 1./ (rec_curr_food_level);
-			cout << c <<" "<< r <<" " << b <<" " << c/r << " "<< Hamilton_rate << endl;
-			if(b > c/r)
-				return 0.; // the rule meets
-
-			return ( b - c/r ) * Hamilton_rate;
+	org->fitness = fitness;
+	if (org->fitness > 5./*win_threshold*/)
+		return true; // recognize this org as winner
+	return false;
 
 }
+double Game::alt_penalize(double giver_old_food_level, double food_granted,
+		double rec_old_food_level, double r) {
+	double giver_curr_food_level = giver_old_food_level - food_granted;
+	double rec_curr_food_level = rec_old_food_level + food_granted;
+	// compute the altruism cost for this org upon this particular help
+	if (food_granted == 0.)
+		return 0;
+	double c = 0;
+	if (giver_curr_food_level == 0. && food_granted > 0)
+		c = 100000.; // this agent killed itself for that agent or was in critical point --> should not help
+	else
+		c = 1. / giver_curr_food_level;
+	double b = 1. / (rec_curr_food_level);
+	cout << c << " " << r << " " << b << " " << c / r << " " << Hamilton_rate
+			<< endl;
+	if (b > c / r)
+		return 0.; // the rule meets
 
-void org_evaluate() {
-	double f;
-	cout << "reading input file.";
-	ifstream iFile("NNinput",ios::in);
-	iFile>>f;
+	return (b - c / r) * Hamilton_rate;
 
-			iFile.close();
-	cout << f;
 }
-bool Game_evaluate(Organism *org){
+
+void Game::create_agent(Organism * org) {
+
+}
+
+bool Game::org_evaluate(Organism *org) {
+
+	double input[NUM_INPUTS];
+	double output[NUM_OUTPUTS];
+	string infilename = "in_out\\NNinput_";
+	ostringstream ss;
+	ss << org->gnome->genome_id;
+	infilename = infilename + ss.str();
+	if(!ifstream(infilename.c_str())) {
+		create_agent(org);
+		org->fitness = -1000;
+		return false;
+	}
+	ifstream iFile(infilename.c_str(), ios::in);
+
+	for(int i = 0; i < NUM_INPUTS; i++) {
+		iFile >> input[i];
+	}
+	iFile.close();
+
+	org->net->load_sensors(input);
+	//Activate the net
+	if (!(org->net->activate())) {
+		org->fitness = -1000;
+		return false;
+	}
+
+	string outfilename = "in_out\\NNoutput_";
+	outfilename = outfilename + ss.str();
+	ofstream oFile(outfilename.c_str(), ios::out);
+
+	for(int i = 0; i < NUM_OUTPUTS; i++) {
+		output[i] = (*(org->net->outputs[i])).activation;
+		oFile << output[i] << ",";
+	}
+	oFile.close();
+
 
 	// should decide whether that org is a winner or not. Since we have no winner I return false.
 	return false;
 
 }
 // *pole2_test_realtime is employed
-Population *Game_test_realtime() {
+Population* Game::Game_test_realtime() {
 	Population *pop;
 	Genome *start_genome;
 	char curword[20];
@@ -60,8 +93,7 @@ Population *Game_test_realtime() {
 
 	ifstream iFile("gamestartgenes", ios::in);
 
-	cout << "START Game REAL-TIME EVOLUTION VALIDATION"
-			<< endl;
+	cout << "START Game REAL-TIME EVOLUTION VALIDATION" << endl;
 
 	cout << "Reading in the start genome" << endl;
 	//Read in the start Genome
@@ -92,7 +124,7 @@ Population *Game_test_realtime() {
 	return pop;
 }
 
-int Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
+int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 	vector<Organism*>::iterator curorg;
 	vector<Species*>::iterator curspecies;
 
@@ -139,7 +171,7 @@ int Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 			cin >> pause;
 		}
 
-		if (Game_evaluate((*curorg)/*, 1, thecart*/))
+		if (org_evaluate((*curorg)/*, 1, thecart*/))
 			win = true;
 
 	}
@@ -194,7 +226,7 @@ int Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 
 		//Here we call two rtNEAT calls:
 		//1) choose_parent_species() decides which species should produce the next offspring
-		//2) reproduce_one(...) creates a single offspring fromt the chosen species
+		//2) reproduce_one(...) creates a single offspring from the chosen species
 		new_org = (pop->choose_parent_species())->reproduce_one(offspring_count,
 				pop, pop->species);
 
@@ -202,7 +234,7 @@ int Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 		//Note that in a true real-time simulation, evaluation would be happening to all individuals at all times.
 		//That is, this call would not appear here in a true online simulation.
 		cout << "Evaluating new baby: " << endl;
-		if (Game_evaluate(new_org/*, 1, thecart*/))
+		if (org_evaluate(new_org/*, 1, thecart*/))
 			win = true;
 
 		if (win) {
