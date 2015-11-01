@@ -43,6 +43,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         private bool m_Jumping;
         private AudioSource m_AudioSource;
 
+        private bool mouseButtonDown = false;
+
         // Use this for initialization
         private void Start()
         {
@@ -102,6 +104,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void FixedUpdate()
         {
+
+            
+
             float speed;
             GetInput(out speed);
             // always move along the camera forward as it is the direction that it being aimed at
@@ -128,14 +133,6 @@ namespace UnityStandardAssets.Characters.FirstPerson
 			{
 				m_MoveDir += Physics.gravity*m_GravityMultiplier*Time.fixedDeltaTime;
 			}
-
-			/*
-            if (m_CharacterController.isGrounded)
-            {
-                m_MoveDir.y = -m_StickToGroundForce;
-				 
-            }
-            */
 
 
 
@@ -215,6 +212,9 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void GetInput(out float speed)
         {
+
+
+
             // Read input
             float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
             float vertical = CrossPlatformInputManager.GetAxis("Vertical");
@@ -248,6 +248,15 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void RotateView()
         {
+            if (Input.GetMouseButtonDown(1)) {
+                mouseButtonDown = true;
+            }
+            if (Input.GetMouseButtonUp(1)) {
+                mouseButtonDown = false;
+            }
+            if (!mouseButtonDown)
+                return;
+
             m_MouseLook.LookRotation (transform, m_Camera.transform);
         }
 

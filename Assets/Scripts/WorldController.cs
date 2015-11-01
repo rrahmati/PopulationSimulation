@@ -30,7 +30,7 @@ public class WorldController : MonoBehaviour {
 	}
 
 	void SpawnAgent(){
-		if (currentPop > population)
+		if (currentPop >= population)
 			return;
 		
 		// Check the spawn location, if nothing there, then spawn the object

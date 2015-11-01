@@ -4,287 +4,299 @@ using System.IO;
 
 public class Agent : MonoBehaviour {
 
-	public int ID = 0;
-	public int species = 0;
-	public int foodLevel = 100;
-	public int foodMaxLevel = 100;
-	public int foodGaveAway = 0;
-	public int foodLevelDPS = 1;
+    public int ID;
+    public int species = 0;
+    public float foodLevel = 100;
+    public float foodMaxLevel = 100;
+    public float foodGaveAway = 0;
+    public float foodLevelDPS = 1;
 
-	public float lifeTime = 0;
-	private float time = 0;
+    public float lifeTime = 0;
+    private float time = 0;
 
-	public float moveSpeed = 10f;		
-	public float rotateSpeed = 10f;		
+    public float moveSpeed = 10f;
+    public float rotateSpeed = 10f;
 
-	public int coneDegree = 120;
-	public int numRaycast = 2;
-	public float rayRange = 10;
+    public float coneDegree = 120;
+    public int numRaycast = 5;
+    public float rayRange = 10;
 
-
-	// Each raycast have 2 for distance, 2 for object identification
-	// and 1 for food level if the target is agent
-	// Distance:
-	// Identification:
-	// 00 = no object
-	// 01 = wall
-	// 10 = food cube
-	// 11 = other agent
-	// Food level: 1 = dying, 0 = healthy/not agent
-
-	public float[] inputArray;
-	private int inputPerRaycast = 4;
+    public int numPieSlice = 3;
+    public float sliceRange = 10;
 
 
-	// output from neural network
-	// [0, numRaycast - 1] should agent give food to agent at ray cast #
-	// 
-	// for numRaycast + i:
-	// where i:
-	// 0 turn left/right
-	// 1 move forward/backward
-    // 
-	public float[] outputArray;
-	private int outputNum = 2;
+    // Each pie slice have 2 input:
+    // - distance to detected food cube	(maxRange - distancce) / maxRange
+    // - distance to detected agent		(maxRange - distancce) / maxRange
+
+    // Each raycast have 1 input:
+    // - distance to the detected wall	(maxRange - distancce) / maxRange
+
+    public float[] inputArray;
+    private int inputsPerPieSlice = 2;
+    private int inputsPerRaycast = 1;
+    private int extraInputs = 2;
 
 
-	private Vector3[] rays;
-	private int rayAngleStart = 0, rayAngle = 0;
+    // output from neural network
+    // - turn left/right
+    // - move forward/backward
+    // - give food away or not
+    public float[] outputArray;
+    private int outputNum = 3;
 
-	public bool died = false;
-	public bool discreetMovement = false;
+
+    private Vector3[] rays;
+    private float rayAngleStart = 0, rayAngle = 0;
+
+    private float[] pieSliceAngles;
+
+
+    public bool died = false;
+    //public bool discreetMovement = false;
 
 
     private string NNInputFileName = "rtNEAT.1.0.2\\in_out\\NNinput";
     private string NNOutputFileName = "rtNEAT.1.0.2\\in_out\\NNoutput";
-	
-	// Use this for initialization
-	void Start () {
 
-		if (discreetMovement) {
-			transform.position = new Vector3(Mathf.Round(transform.position.x),
-			                                 Mathf.Round(transform.position.y),
-			                                 Mathf.Round(transform.position.z));
-			transform.Rotate(new Vector3(0,0,1));
-		}
+    // Use this for initialization
+    void Start() {
 
-		// need at least a raycast
-		numRaycast = Mathf.Max (numRaycast, 1);
-		rays = new Vector3[numRaycast];
+        // need at least a raycast
+        numRaycast = Mathf.Max(numRaycast, 1);
+        rays = new Vector3[numRaycast];
 
-		inputArray = new float[numRaycast*inputPerRaycast];
+        inputArray = new float[numRaycast * inputsPerRaycast + numPieSlice * inputsPerPieSlice + extraInputs];
 
-		outputNum += numRaycast;
-		outputArray = new float[outputNum];
+        //outputNum += numRaycast + 1;
+        outputArray = new float[outputNum];
 
+        // setup angles for pie slice
+        // need 4 numbers for 3 slices
+        pieSliceAngles = new float[numPieSlice + 1];
+        float degreeOfEachPieSlice = coneDegree / numPieSlice;
+        pieSliceAngles[0] = -coneDegree / 2;
+        for (int i = 1; i < pieSliceAngles.Length; i++) {
+            pieSliceAngles[i] = pieSliceAngles[i - 1] + degreeOfEachPieSlice;
+        }
 
-		if (numRaycast <= 1) {
-			rayAngleStart = 90;
+        // setup angles for raycasts
+        if (numRaycast <= 1) {
+            rayAngleStart = 90;
             return;
         }
 
-		rayAngleStart = 90 - (coneDegree / 2);
-		rayAngle = coneDegree / Mathf.Max((numRaycast - 1),1);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
-		if (died)
-			return;
-
-		// change agent color based on the food level
-		transform.GetComponent<Renderer> ().material.color = new Color ((100.0f - foodLevel) / 100, foodLevel / 100.0f, 0);
-
-		// food level decrease over time
-		if (time > 1) {
-			foodLevel -= foodLevelDPS;
-			time--;
-		}
-		time += Time.deltaTime;
-		lifeTime += Time.deltaTime;
+        rayAngleStart = 90 - (coneDegree / 2);
+        rayAngle = coneDegree / Mathf.Max((numRaycast - 1), 1);
 
 
-		RaycastHit[] hits = new RaycastHit[numRaycast];
-		for (int i = 0; i < numRaycast; i++) {
+    }
 
-			rays[i] = new Vector3(Mathf.Cos(((rayAngle * i) + rayAngleStart)*Mathf.Deg2Rad), 
-			          			  0,
-			                      Mathf.Sin(((rayAngle * i) + rayAngleStart)*Mathf.Deg2Rad));
-			rays[i] = rays[i].normalized;
-			rays[i] = transform.TransformDirection(rays[i]);
-			Debug.DrawRay (transform.position, rays[i] * rayRange, Color.red);
-			Physics.Raycast(transform.position, rays[i], out hits[i], rayRange);
+    // Update is called once per frame
+    void Update() {
 
-			int index = i * inputPerRaycast;
-			// no hit? set everything related to zero
-			if(hits[i].distance <= 0){
-				inputArray[(index)+0] = 0;
-				inputArray[(index)+1] = 0;
-				inputArray[(index)+2] = 0;
-				inputArray[(index)+3] = 0;
-			}
-			// for each raycast, determine what kind of input it is
-			else{
-				float tempDist = hits[i].distance;
-                inputArray[(index)] = hits[i].distance / rayRange;
+        if (died)
+            return;
 
-				Debug.Log("ID#: " + ID + " Ray#: " + i + " Tag: " + hits[i].transform.gameObject.tag);
-				switch(hits[i].transform.gameObject.tag){
-				case "Wall":
-					inputArray[(index)+1] = 0;
-					inputArray[(index)+2] = 1;
-					inputArray[(index)+3] = 0;
-					break;
-				case "Food":
-					inputArray[(index)+1] = 1;
-					inputArray[(index)+2] = 0;
-					inputArray[(index)+3] = 0;
-					break;
-				case "Agent":
-					inputArray[(index)+1] = 1;
-					inputArray[(index)+2] = 1;
+        // change agent color based on the food level
+        transform.GetComponent<Renderer>().material.color = new Color((100.0f - foodLevel) / 100, foodLevel / 100.0f, 0);
 
-					// lower food level mean higher activation value
-					Agent other = (hits[i].transform.gameObject).GetComponent<Agent>();
-					inputArray[(index)+3] = (foodMaxLevel - other.foodLevel) / foodMaxLevel;
-
-					// if output is to give away food, than give food away
-					if(outputArray[i] == 1)
-						GiveFood(other);
-
-					break;
-				default:
-					inputArray[(index)+1] = 0;
-					inputArray[(index)+2] = 0;
-					inputArray[(index)+3] = 0;
-					break;
-				}
-			}
-		}
+        // food level decrease over time
+        if (time > 1) {
+            foodLevel -= foodLevelDPS;
+            time--;
+        }
+        time += Time.deltaTime;
+        lifeTime += Time.deltaTime;
 
 
-		// no need to reset output array since
-		// either a function call will get the output from ANN, or
-		// outputArray will be update by ANN from somewhere else
+        // Raycast (range sensor) (wall detector)
+        RaycastHit[] hits = new RaycastHit[numRaycast];
+        for (int i = 0; i < numRaycast; i++) {
+
+            rays[i] = new Vector3(Mathf.Cos(((rayAngle * i) + rayAngleStart) * Mathf.Deg2Rad),
+                                  0,
+                                  Mathf.Sin(((rayAngle * i) + rayAngleStart) * Mathf.Deg2Rad));
+            rays[i] = rays[i].normalized;
+            rays[i] = transform.TransformDirection(rays[i]);
+            Debug.DrawRay(transform.position, rays[i] * rayRange, Color.red);
+            Physics.Raycast(transform.position, rays[i], out hits[i], rayRange);
+
+            // hit the wall, set input based on distance
+            if (hits[i].distance > 0) {
+                float tempDist = hits[i].distance;
+
+                if (hits[i].transform.gameObject.tag == "Wall") {
+                    // high activation when closer to the wall
+                    inputArray[i] = (rayRange - hits[i].distance) / rayRange;
+                    Debug.Log("ID#: " + ID + " Ray#: " + i + " Tag: " + hits[i].transform.gameObject.tag);
+                }
+            }
+            // no hit? set everything related to zero
+            else {
+                inputArray[i] = 0;
+            }
+        }
+
+        // food detector and agent detector
+        // get array of object within radius
+        Collider[] colliders = Physics.OverlapSphere(transform.position, sliceRange);
+        int offset = 0;
+        // for each detected object, determine what pie slice it belong to and update distance
+        foreach (Collider c in colliders) {
+            if (c.gameObject == this.gameObject)
+                continue;
+
+            // check if object is what we want
+            if (c.gameObject.tag == "Food" || c.gameObject.tag == "Agent") {
+
+                if (c.gameObject.tag == "Agent")
+                    offset = numPieSlice;
+
+                Vector3 target = c.transform.position - transform.position;
+                float angle = Angle(target);
+
+                // determine which pie slice the object belong
+                for (int i = 0; i < numPieSlice; i++) {
+                    if (angle >= pieSliceAngles[i] && angle < pieSliceAngles[i + 1]) {
+                        float input = (sliceRange - target.magnitude) / sliceRange;
+
+                        // is this the closest object in this pie slice
+                        if (input > inputArray[numRaycast + i]) {
+                            inputArray[numRaycast + i + offset] = input;
+                        }
+                        //Debug.Log("Angle: " + angle + ", Between " + pieSliceAngles[i] + " and " + pieSliceAngles[i+1]);
+                    }
+                }
+            }
+        }
+
+        inputArray[numRaycast + 2 * numPieSlice] = (foodMaxLevel - foodLevel) / foodMaxLevel;
+        RaycastHit hit;
+        Physics.Raycast(transform.position, transform.forward, out hit, rayRange);
+        if (hit.distance > 0) {
+            if (hit.transform.gameObject.tag == "Agent") {
+                Agent agentScript = hit.transform.gameObject.GetComponent<Agent>();
+                inputArray[numRaycast + 2 * numPieSlice + 1] = (foodMaxLevel - agentScript.foodLevel) / foodMaxLevel;
+                if (outputArray[1] > 0)
+                    GiveFood(agentScript);
+            }
+        }
+
+        // no need to reset output array since
+        // either a function call will get the output from ANN, or
+        // outputArray will be update by ANN from somewhere else
 
 
-		// perform output behavior
-		if (outputArray [numRaycast + 0] > 0)
-            Turn(outputArray[numRaycast + 0]);
-		if (outputArray [numRaycast + 1] > 0)
-            MoveFB(outputArray[numRaycast + 1]);
+        // perform output behavior
+        if (outputArray[0] > 0)
+            Turn(outputArray[0]);
+        if (outputArray[1] > 0)
+            MoveFB(outputArray[1]);
 
 
 
-		// save input to file
-		WriteNNInput ();
-		// get output from file
-		ReadNNOutput ();
-
-		if (foodLevel < 0)
-			died = true;
-	}
+        // save input to file
+        WriteNNInput();
+        // get output from file
+        //ReadNNOutput();
 
 
-	void Turn(float directionSpeed){
+
+        if (foodLevel < 0)
+            died = true;
+    }
+
+
+    void Turn(float directionSpeed) {
 
         directionSpeed *= rotateSpeed;
-		if (discreetMovement) {
-			if(directionSpeed < 0)
-				transform.Rotate (0, -90, 0);
-			else
-				transform.Rotate (0, 90, 0);
 
-			return;
-		}
+        transform.Rotate(0, directionSpeed * Time.deltaTime, 0);
+    }
 
-		transform.Rotate (0, directionSpeed * Time.deltaTime, 0);
-	}
-
-    void MoveFB(float value)
-    {
+    void MoveFB(float value) {
         value -= .5f;
         Move(transform.forward * value);
     }
 
-	void Move(Vector3 directionVector){
-		// check if there is any thing in fron of it (only short distance
-		RaycastHit hit;
-		Physics.Raycast(transform.position, transform.forward, out hit, 1);
-        //// hit something?
-        //if (hit.distance > 0) {
-        //    return;
-        //}
+    void Move(Vector3 directionVector) {
+        transform.position += directionVector * moveSpeed * Time.deltaTime;
+    }
 
-        //// no hit? move
-        //if (discreetMovement) {
-        //    transform.position += directionVector * 1;
-        //    return;
-        //}
-		transform.position += directionVector * moveSpeed * Time.deltaTime;
-	}
-	
-	// Agent may die after give away food, (Self-sacrifice)
-	void GiveFood(Agent other){
-		int foodGiveAway = Mathf.Max(Mathf.Min (10, foodLevel), 0);
 
-		// if agent ever five away food, we really want to know
-		// especially if it is a self sacrifice action
-		Debug.Log ("Agent " + ID + " just give a way " + foodGiveAway + " food to Agent " + other.ID);
-		if(foodGiveAway < 10)
-			Debug.Log ("Agent " + ID + " just sacrifice its life for Agent " + other.ID);
+    void GiveFood() {
 
-		other.foodLevel = Mathf.Min(foodMaxLevel, other.foodLevel + foodGiveAway);
-		foodLevel -= foodGiveAway;
-		foodGaveAway += foodGiveAway;
-	}
+    }
+    // Agent may die after give away food, (Self-sacrifice)
+    void GiveFood(Agent other) {
+        float foodGiveAway = Mathf.Max(Mathf.Min(10.0f, foodLevel), 0.0f);
+
+        // if agent ever five away food, we really want to know
+        // especially if it is a self sacrifice action
+        Debug.Log("Agent " + ID + " just give a way " + foodGiveAway + " food to Agent " + other.ID);
+        if (foodGiveAway < 10)
+            Debug.Log("Agent " + ID + " just sacrifice its life for Agent " + other.ID);
+
+        other.foodLevel = Mathf.Min(foodMaxLevel, other.foodLevel + foodGiveAway);
+        foodLevel -= foodGiveAway;
+        foodGaveAway += foodGiveAway;
+    }
 
 
 
-	void OnTriggerEnter(Collider other){
-		if (other.gameObject.tag == "Food") {
-			foodLevel = Mathf.Min(foodLevel+10, foodMaxLevel);
-			Destroy (other.gameObject);
-		}
-	}
+    void OnTriggerEnter(Collider other) {
+        if (other.gameObject.tag == "Food") {
+            foodLevel = Mathf.Min(foodLevel + 10, foodMaxLevel);
+            Destroy(other.gameObject);
+        }
+    }
 
 
-	void ReadNNOutput()
-	{
-		string path = NNOutputFileName + "_" + ID;
+    float Angle(Vector3 target) {
 
-		if (!File.Exists (path))
-			return;
+        // target is on the right, hence negative
+        if (Vector3.Angle(transform.right, target) < 90) {
+            return -Vector3.Angle(transform.forward, target);
+        }
+        // target is on the left, hence positive
+        else {
+            return Vector3.Angle(transform.forward, target);
+        }
+    }
 
-		StreamReader reader = new StreamReader(File.OpenRead(path));
 
-		string line = reader.ReadLine();
-		string[] values = line.Split(',');
-		for (int output = 0; output < outputArray.Length; output++)
-		{
-			outputArray[output] = int.Parse(values[output]);
-		}
-		//print(outputArray);
-	}
+    void ReadNNOutput() {
+        string path = NNOutputFileName + "_" + ID;
 
-	void WriteNNInput()
-	{
-		string path = NNInputFileName + "_" + ID;
-        print(path);
-		StreamWriter file = new StreamWriter (path);
+        if (!File.Exists(path))
+            return;
 
-		string lines = "";
-		foreach (float input in inputArray)
-		{
-			lines += input + ",";
-		}
-		lines += "\n";
+        StreamReader reader = new StreamReader(File.OpenRead(path));
 
-		file.WriteLine (lines);
+        string line = reader.ReadLine();
+        string[] values = line.Split(',');
+        for (int output = 0; output < outputArray.Length; output++) {
+            outputArray[output] = int.Parse(values[output]);
+        }
+        //print(outputArray);
+    }
 
-		file.Close ();
-	}
-	
-	
+    void WriteNNInput() {
+        string path = NNInputFileName + "_" + ID;
+        //print(path);
+        StreamWriter file = new StreamWriter(path);
+
+        string lines = "";
+        foreach (float input in inputArray) {
+            lines += input + ",";
+        }
+        lines += "\n";
+
+        file.WriteLine(lines);
+
+        file.Close();
+    }
+
+
 }
