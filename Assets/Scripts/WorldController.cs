@@ -96,7 +96,7 @@ public class WorldController : MonoBehaviour {
     }
 
     void ReadFitnessOutput() {
-        string path = NNOutputFileName + "_" + ID;
+        string path = NNOutputFileName;
 
         if (!File.Exists(path))
             return;
