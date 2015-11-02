@@ -11,6 +11,7 @@ public class Agent : MonoBehaviour {
     public float foodGaveAway = 0;
     public float foodLevelDPS = 1;
 
+    public float fitness;
     public float lifeTime = 0;
     private float time = 0;
 
@@ -291,6 +292,7 @@ public class Agent : MonoBehaviour {
         foreach (float input in inputArray) {
             lines += input + ",";
         }
+        lines += fitness + ",";
         lines += "\n";
 
         file.WriteLine(lines);

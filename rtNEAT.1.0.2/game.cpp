@@ -1,42 +1,12 @@
 #include "game.h"
 #include <cstring>
 
-bool Game::org_fitness(Organism *org, double age, double food_gain, int wall_hit) {
-	double fitness = (age * (food_gain)) / wall_hit;
-
-	org->fitness = fitness;
-	if (org->fitness > 5./*win_threshold*/)
-		return true; // recognize this org as winner
-	return false;
-
-}
-double Game::alt_penalize(double giver_old_food_level, double food_granted,
-		double rec_old_food_level, double r) {
-	double giver_curr_food_level = giver_old_food_level - food_granted;
-	double rec_curr_food_level = rec_old_food_level + food_granted;
-	// compute the altruism cost for this org upon this particular help
-	if (food_granted == 0.)
-		return 0;
-	double c = 0;
-	if (giver_curr_food_level == 0. && food_granted > 0)
-		c = 100000.; // this agent killed itself for that agent or was in critical point --> should not help
-	else
-		c = 1. / giver_curr_food_level;
-	double b = 1. / (rec_curr_food_level);
-	cout << c << " " << r << " " << b << " " << c / r << " " << Hamilton_rate
-			<< endl;
-	if (b > c / r)
-		return 0.; // the rule meets
-
-	return (b - c / r) * Hamilton_rate;
-
-}
-
 void Game::create_agent(Organism * org) {
 
 }
 
-bool Game::org_evaluate(Organism *org) {
+
+bool Game::take_action(Organism *org) {
 
 	double input[NUM_INPUTS];
 	double output[NUM_OUTPUTS];
@@ -46,14 +16,17 @@ bool Game::org_evaluate(Organism *org) {
 	infilename = infilename + ss.str();
 	if(!ifstream(infilename.c_str())) {
 		create_agent(org);
-		org->fitness = -1000;
-		return false;
+		for(int i = 0; i < NUM_INPUTS; i++) {
+			input[i] = 0;
+		}
+		org->fitness = 0;
 	}
 	ifstream iFile(infilename.c_str(), ios::in);
 
 	for(int i = 0; i < NUM_INPUTS; i++) {
 		iFile >> input[i];
 	}
+	iFile >> org->fitness;
 	iFile.close();
 
 	org->net->load_sensors(input);
@@ -171,7 +144,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 			cin >> pause;
 		}
 
-		if (org_evaluate((*curorg)/*, 1, thecart*/))
+		if (take_action((*curorg)/*, 1, thecart*/))
 			win = true;
 
 	}
@@ -234,7 +207,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 		//Note that in a true real-time simulation, evaluation would be happening to all individuals at all times.
 		//That is, this call would not appear here in a true online simulation.
 		cout << "Evaluating new baby: " << endl;
-		if (org_evaluate(new_org/*, 1, thecart*/))
+		if (take_action(new_org/*, 1, thecart*/))
 			win = true;
 
 		if (win) {
