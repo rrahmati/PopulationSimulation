@@ -16,6 +16,7 @@ public class WorldController : MonoBehaviour
 
     private string NNInputFileName = "rtNEAT.1.0.2\\in_out\\Fitness_input";
     private string NNOutputFileName = "rtNEAT.1.0.2\\Fitness_output";
+    private string agentIDsFilename = "rtNEAT.1.0.2\\in_out\\agentIDs";
 
     public ArrayList agentList;
 
@@ -34,8 +35,7 @@ public class WorldController : MonoBehaviour
     void Update()
     {
 
-        SpawnAgent();
-
+        SyncAgents();
         if (timer > EvaluationRateInSec)
         {
             EvaluatePopulation();
@@ -45,7 +45,7 @@ public class WorldController : MonoBehaviour
 
     }
 
-    void SpawnAgent()
+    void SpawnAgent(int ID)
     {
         if (currentPop >= population)
             return;
@@ -59,15 +59,46 @@ public class WorldController : MonoBehaviour
 
             // Initialize ID, species for the agent
             Agent script = gameObj.GetComponent<Agent>();
-            script.ID = IDCounter;
+            script.ID = ID;
 
 
             agentList.Add(gameObj);
             currentPop++;
-            IDCounter++;
         }
     }
 
+    void SyncAgents()
+    {
+        if (!File.Exists(agentIDsFilename))
+            return;
+        StreamReader reader = new StreamReader(File.OpenRead(agentIDsFilename));
+
+        string line = reader.ReadLine();
+        string[] values = line.Split(',');
+        ArrayList IDs = new ArrayList();
+        for (int i = 0; i < values.Length; i++)
+        {
+            if(values[i].Length > 0)
+                IDs.Add(System.Convert.ToInt32(values[i]));
+        }
+        for (int i = 0; i < agentList.Count; i++)
+        {
+            int agentID = ((GameObject)agentList[i]).GetComponent<Agent>().ID;
+            if (IDs.Contains(agentID))
+            {
+                IDs.Remove(agentID);
+            }
+            else
+            {
+                Destroy((GameObject)agentList[i]);
+                agentList.Remove((GameObject)agentList[i]);
+            }
+        }
+        for (int i = 0; i < IDs.Count; i++)
+        {
+            SpawnAgent((int)IDs[i]);
+        }
+    }
 
     void EvaluatePopulation()
     {

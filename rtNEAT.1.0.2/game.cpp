@@ -1,5 +1,6 @@
 #include "game.h"
-#include <cstring>
+#include <thread>
+#include <chrono>
 
 void Game::create_agent(Organism * org) {
 
@@ -160,7 +161,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 
 	//Now create offspring one at a time, testing each offspring,
 	// and replacing the worst with the new offspring if its better
-	for (offspring_count = 0; offspring_count < 20000; offspring_count++) {
+	for (offspring_count = 0; offspring_count < 20; offspring_count++) {
 
 		//Every pop_size reproductions, adjust the compat_thresh to better match the num_species_targer
 		//and reassign the population to new species
@@ -180,11 +181,17 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 
 			cout << "compat_thresh = " << NEAT::compat_threshold << endl;
 
-			//Go through entire population, reassigning organisms to new species
+			//Go through entire population, reassigning organisms to new species and print their ID into a file
+			string outfilename = "in_out\\agentIDs";
+			ofstream oFile(outfilename.c_str(), ios::out);
 			for (curorg = (pop->organisms).begin();
 					curorg != pop->organisms.end(); ++curorg) {
 				pop->reassign_species(*curorg);
+
+				oFile << (*curorg)->gnome->genome_id << ",";
+
 			}
+			oFile.close();
 		}
 
 		//For printing only
@@ -222,6 +229,10 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 		//Remove the worst organism
 		pop->remove_worst();
 
+
+		for(int i = 0; i < 1000000000; i++){}
+//		std::this_thread::sleep_for (std::chrono::seconds(1));
+//		boost::this_thread::sleep( boost::posix_time::milliseconds(1000) );
 	}
 
 }

@@ -179,7 +179,7 @@ public class Agent : MonoBehaviour {
             if (hit.transform.gameObject.tag == "Agent") {
                 Agent agentScript = hit.transform.gameObject.GetComponent<Agent>();
                 inputArray[numRaycast + 2 * numPieSlice + 1] = (foodMaxLevel - agentScript.foodLevel) / foodMaxLevel;
-                if (outputArray[1] > 0)
+                if (outputArray[2] > 0)
                     GiveFood(agentScript);
             }
         }
@@ -200,7 +200,7 @@ public class Agent : MonoBehaviour {
         // save input to file
         WriteNNInput();
         // get output from file
-        //ReadNNOutput();
+        ReadNNOutput();
 
 
 
@@ -217,7 +217,7 @@ public class Agent : MonoBehaviour {
     }
 
     void MoveFB(float value) {
-        value -= .5f;
+        //value -= .5f;
         Move(transform.forward * value);
     }
 
@@ -231,7 +231,7 @@ public class Agent : MonoBehaviour {
     }
     // Agent may die after give away food, (Self-sacrifice)
     void GiveFood(Agent other) {
-        float foodGiveAway = Mathf.Max(Mathf.Min(10.0f, foodLevel), 0.0f);
+        float foodGiveAway = Mathf.Max(Mathf.Min(0.05f, foodLevel), 0.0f);
 
         // if agent ever five away food, we really want to know
         // especially if it is a self sacrifice action
@@ -278,7 +278,7 @@ public class Agent : MonoBehaviour {
         string line = reader.ReadLine();
         string[] values = line.Split(',');
         for (int output = 0; output < outputArray.Length; output++) {
-            outputArray[output] = int.Parse(values[output]);
+            outputArray[output] = float.Parse(values[output]);
         }
         //print(outputArray);
     }
