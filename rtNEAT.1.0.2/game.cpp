@@ -1,3 +1,4 @@
+
 #include "game.h"
 #include <thread>
 #include <chrono>
@@ -22,9 +23,10 @@ bool Game::take_action(Organism *org) {
 		}
 		org->fitness = 0;
 	}
+
 	ifstream iFile(infilename.c_str(), ios::in);
 
-	for(int i = 0; i < NUM_INPUTS; i++) {
+	for(int i = 0; i < NUM_INPUTS; i++){
 		iFile >> input[i];
 	}
 	iFile >> org->fitness;
@@ -73,14 +75,15 @@ Population* Game::Game_test_realtime() {
 	//Read in the start Genome
 	iFile >> curword;
 	iFile >> id;
-	cout << "Reading in Genome id " << id << endl;
+	cout << "Reading in Genome id -" <<curword<<"- "<< id << endl;
 	start_genome = new Genome(id, iFile);
 	iFile.close();
 
-	cout << "Start Genome: " << start_genome << endl;
+	cout << "Start Genome: " << start_genome <<" "<< start_genome->genome_id <<" "<< start_genome->genes.size() <<" "
+			<< start_genome->nodes.size()  << endl;
 
 	//Spawn the Population from starter gene
-	cout << "Spawning Population off Genome" << endl;
+	cout << "Spawning Population off Genome " << NEAT::pop_size << endl;
 	pop = new Population(start_genome, NEAT::pop_size);
 
 	//Alternative way to start off of randomly connected genomes
@@ -98,7 +101,7 @@ Population* Game::Game_test_realtime() {
 	return pop;
 }
 
-int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
+int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // return an org with the highest score
 	vector<Organism*>::iterator curorg;
 	vector<Species*>::iterator curspecies;
 
@@ -228,11 +231,22 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) {
 
 		//Remove the worst organism
 		pop->remove_worst();
-
-
-		for(int i = 0; i < 1000000000; i++){}
+        cout << "worst has been removed" << endl;
+        cout << "entering the loop" << endl;
+		for(int i = 0; i < 100; i++){}
 //		std::this_thread::sleep_for (std::chrono::seconds(1));
 //		boost::this_thread::sleep( boost::posix_time::milliseconds(1000) );
+	}//((*curorg)->gnome)->genome_id=orgcount++;
+
+	double fitn = -1.;
+	int high_fit_id = -1;
+	for (curorg = (pop->organisms).begin();	curorg != pop->organisms.end(); ++curorg){
+		if((*curorg)->fitness > fitn){
+               fitn = (*curorg)->fitness;
+               high_fit_id = ((*curorg)->gnome)->genome_id;
+		}
 	}
+    cout << "high_fit_id is " << high_fit_id <<endl; // the highest fitness org id
+	return high_fit_id;
 
 }

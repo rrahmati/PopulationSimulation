@@ -11,6 +11,7 @@ Population::Population(Genome *g,int size) {
 	winnergen=0;
 	highest_fitness=0.0;
 	highest_last_changed=0;
+	std::cout <<"size in pop= " <<size <<std::endl;
 	spawn(g,size);
 }
 
@@ -257,9 +258,10 @@ bool Population::spawn(Genome *g,int size) {
 	int count;
 	Genome *new_genome;
 	Organism *new_organism;
-
+    std::cout <<"hiiiiiiii "  << size << std::endl;
 	//Create size copies of the Genome
 	//Start with perturbed linkweights
+   // return false;
 	for(count=1;count<=size;count++) {
 		//cout<<"CREATING ORGANISM "<<count<<endl;
 
@@ -270,14 +272,15 @@ bool Population::spawn(Genome *g,int size) {
 		new_organism=new Organism(0.0,new_genome,1);
 		organisms.push_back(new_organism);
 	}
-
+	 std::cout <<"hiiyiiiii22222 " << std::endl;
 	//Keep a record of the innovation and node number we are on
 	cur_node_id=new_genome->get_last_node_id();
+	std::cout <<"hiiiiiiii3333" << std::endl;
 	cur_innov_num=new_genome->get_last_gene_innovnum();
 
 	//Separate the new Population into species
 	speciate();
-
+	std::cout <<"hiiiiiiii44444" << std::endl;
 	return true;
 }
 

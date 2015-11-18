@@ -63,7 +63,7 @@ Network::Network(const Network& network)
 	}
 
 	if(network.name)
-		name = strdup(network.name);
+		name = network.name; // removed name = strdup(network.name);
 	else
 		name = 0;
 

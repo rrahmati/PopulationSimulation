@@ -30,9 +30,9 @@ using namespace std;
 //  double testdoubset(double val) {
 //    *testdoub=val;
 //  }
-
+//int pop_size;
 int main(int argc, char *argv[]) {
-
+  //pop_size = 80;
   //list<NNode*> nodelist;
   // Global parameters:
   int pause;
@@ -118,6 +118,7 @@ int main(int argc, char *argv[]) {
     case 7: {
     	Game game;
     	p=game.Game_test_realtime();
+    	cout <<"Number of organisms in the population: " <<p->organisms.size() <<endl;
 	  break;
     }
     default:
@@ -132,7 +133,7 @@ int main(int argc, char *argv[]) {
 
   if (p)
     delete p;
-
+  cout <<"Game Finished" << endl;
   return(0);
  
 }

@@ -28,8 +28,6 @@ class Game {
 	int NUM_INPUTS = NUM_RAYCASTS * 4 + 1;
 	int NUM_OUTPUTS = NUM_RAYCASTS + 2;
 
-
-
 	Population *game_test(int gens);
 	bool game_progress(Organism *org);
 	int game_epoch(Population *pop,int generation,char *filename, int &winnernum, int &winnergenes,int &winnernodes, 		double &fitness, int &species, int &genes);

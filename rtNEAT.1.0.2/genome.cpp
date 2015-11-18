@@ -99,7 +99,7 @@ Genome::Genome(int id, std::ifstream &iFile) {
 	//int pause;
 
 	genome_id=id;
-
+	std::cout <<"here is the genome id= " << genome_id << std::endl;
 	iFile.getline(curline, sizeof(curline));
 	int wordcount = NEAT::getUnitCount(curline, delimiters);
 	int curwordnum = 0;
@@ -201,8 +201,9 @@ Genome::Genome(int id, std::ifstream &iFile) {
             //std::cout<<"Added gene " << newgene << std::endl;
 		}
 
-	}
 
+	}
+std::cout <<"nodes size= " <<nodes.size() << std::endl;
 }
 
 
