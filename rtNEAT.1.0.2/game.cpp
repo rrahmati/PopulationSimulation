@@ -1,11 +1,4 @@
-
 #include "game.h"
-#include <thread>
-#include <chrono>
-
-void Game::create_agent(Organism * org) {
-
-}
 
 
 bool Game::take_action(Organism *org) {
@@ -184,18 +177,20 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 
 			cout << "compat_thresh = " << NEAT::compat_threshold << endl;
 
-			//Go through entire population, reassigning organisms to new species and print their ID into a file
-			string outfilename = "in_out\\agentIDs";
-			ofstream oFile(outfilename.c_str(), ios::out);
-			for (curorg = (pop->organisms).begin();
-					curorg != pop->organisms.end(); ++curorg) {
-				pop->reassign_species(*curorg);
 
-				oFile << (*curorg)->gnome->genome_id << ",";
-
-			}
-			oFile.close();
 		}
+		//Go through entire population, reassigning organisms to new species and print their ID into a file
+		string outfilename = "in_out\\agentIDs";
+		ofstream oFile(outfilename.c_str(), ios::out);
+		for (curorg = (pop->organisms).begin();
+				curorg != pop->organisms.end(); ++curorg) {
+			pop->reassign_species(*curorg);
+
+			oFile << (*curorg)->gnome->genome_id << ",";
+			take_action(*curorg);
+		}
+		oFile.close();
+
 
 		//For printing only
 		for (curspec = (pop->species).begin(); curspec != (pop->species).end();
@@ -212,22 +207,6 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		//2) reproduce_one(...) creates a single offspring from the chosen species
 		new_org = (pop->choose_parent_species())->reproduce_one(offspring_count,
 				pop, pop->species);
-
-		//Now we evaluate the new individual
-		//Note that in a true real-time simulation, evaluation would be happening to all individuals at all times.
-		//That is, this call would not appear here in a true online simulation.
-		cout << "Evaluating new baby: " << endl;
-		if (take_action(new_org/*, 1, thecart*/))
-			win = true;
-
-		if (win) {
-			cout << "WINNER" << endl;
-			pop->print_to_file_by_species("rt_winpop");
-			break;
-		}
-
-		//Now we reestimate the baby's species' fitness
-		new_org->species->estimate_average();
 
 		//Remove the worst organism
 		pop->remove_worst();
