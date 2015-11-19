@@ -137,7 +137,7 @@ public class WorldController : MonoBehaviour
         double age = agentScript.lifeTime;
         double food_gain = agentScript.foodLevel;
         double penalty = 0; // for now
-        double fitness = alpha * food_gain + beta * age - penalty;
+        double fitness = alpha * food_gain - penalty;
         agentScript.fitness = (float) fitness;
         return 0;
     }

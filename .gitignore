@@ -11,8 +11,11 @@ learning/models
 learning/trajectories
 learning/predictions
 rtNEAT.1.0.2/Debug
+rtNEAT.1.0.2/src/.settings
 rtNEAT.1.0.2/.settings
-rtNEAT.1.0.2/in_out/
+rtNEAT.1.0.2/src/in_out/
+rtNEAT.1.0.2/src/.metadata/
+rtNEAT.1.0.2/.metadata/
 Assets/Plugins
  
 *.csproj
@@ -88,3 +91,4 @@ learning/model
 rtNEAT.1.0.2/NNinput
 *.txt
 
+rtNEAT.1.0.2/src/.autotools

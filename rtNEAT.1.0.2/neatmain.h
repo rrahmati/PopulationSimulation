@@ -1,7 +1,0 @@
-double *testdoub;
-
-
-
-
-
-
