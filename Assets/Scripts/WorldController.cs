@@ -14,9 +14,9 @@ public class WorldController : MonoBehaviour
     public GameObject spawnPoint;
     public GameObject spawnObject;
 
-    private string NNInputFileName = "rtNEAT.1.0.2\\in_out\\Fitness_input";
-    private string NNOutputFileName = "rtNEAT.1.0.2\\Fitness_output";
-    private string agentIDsFilename = "rtNEAT.1.0.2\\in_out\\agentIDs";
+    private string NNInputFileName = "rtNEAT.1.0.2\\src\\in_out\\Fitness_input";
+    private string NNOutputFileName = "rtNEAT.1.0.2\\src\\Fitness_output";
+    private string agentIDsFilename = "rtNEAT.1.0.2\\src\\in_out\\agentIDs";
 
     public ArrayList agentList;
 

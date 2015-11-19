@@ -57,8 +57,8 @@ public class Agent : MonoBehaviour {
     //public bool discreetMovement = false;
 
 
-    private string NNInputFileName = "rtNEAT.1.0.2\\in_out\\NNinput";
-    private string NNOutputFileName = "rtNEAT.1.0.2\\in_out\\NNoutput";
+    private string NNInputFileName = "rtNEAT.1.0.2\\src\\in_out\\NNinput";
+    private string NNOutputFileName = "rtNEAT.1.0.2\\src\\in_out\\NNoutput";
 
     // Use this for initialization
     void Start() {
