@@ -3,7 +3,8 @@
 #include <fstream>
 #include <cmath>
 #include <cstring>
-
+#include <iostream>
+using namespace std;
 int NEAT::time_alive_minimum = 0;
 double NEAT::trait_param_mut_prob = 0;
 double NEAT::trait_mutation_power = 0; // Power of mutation on a signle trait param 
@@ -32,7 +33,7 @@ double NEAT::mate_multipoint_avg_prob = 0;
 double NEAT::mate_singlepoint_prob = 0;
 double NEAT::mate_only_prob = 0; // Prob. of mating without mutation 
 double NEAT::recur_only_prob = 0;  // Probability of forcing selection of ONLY links that are naturally recurrent 
-int NEAT::pop_size = 80;  // Size of population
+int NEAT::pop_size;  // Size of population
 int NEAT::dropoff_age = 0;  // Age where Species starts to be penalized 
 int NEAT::newlink_tries = 0;  // Number of tries mutate_add_link will attempt to find an open link 
 int NEAT::print_every = 0; // Tells to print population to file every n generations 
@@ -123,6 +124,7 @@ bool NEAT::load_neat_params(const char *filename, bool output) {
 	if(!paramFile) {
 		return false;
 	}
+
 	char curword[128];
 	//char delimiters[] = " \n"; // tab = bad, CR(int 13) = bad in the file
 	//char delimiters[] = " \t\n";
@@ -326,7 +328,7 @@ bool NEAT::load_neat_params(const char *filename, bool output) {
 	
     paramFile>>curword;
 	paramFile>>NEAT::pop_size;
-	
+	 cout <<"eeeeeeeeeeeeeeee " << NEAT::pop_size << endl;
     //strcpy(curword, getUnit(filestring, curwordnum, delimiters));
 	//NEAT::pop_size = atoi(curword);
 	//curwordnum += 2;

@@ -30,10 +30,12 @@ class Game {
 
 	Population *game_test(int gens);
 	bool game_progress(Organism *org);
+	bool donation_eligibility(Organism *org ,Organism *org2);
 	int game_epoch(Population *pop,int generation,char *filename, int &winnernum, int &winnergenes,int &winnernodes, 		double &fitness, int &species, int &genes);
 	void create_agent(Organism * org);
 	int Game_realtime_loop(Population *pop);
 	bool take_action(Organism *org);
+	void test_time();
 public:
 	Population *Game_test_realtime();
 

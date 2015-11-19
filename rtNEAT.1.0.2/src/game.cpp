@@ -2,17 +2,32 @@
 #include "game.h"
 #include <thread>
 #include <chrono>
-
+#include <windows.h>
 void Game::create_agent(Organism * org) {
 
 }
+void Game::test_time(){
+	for(;;)
+	    {
+	    cout <<"hi" << endl;
+	    // Sleep for 50*1000ms
+	    Sleep(1000); // Sleep for 1*1000ms
 
+	    }
+}
+
+bool Game::donation_eligibility(Organism *giver, Organism *receiver){ // check if giver can donate food to receiver
+	// both orgs should belong to the same specious (also food level of giver should be higher)
+	if(giver->gnome->genome_id == receiver->gnome->genome_id)
+		return true;
+	return false;
+}
 
 bool Game::take_action(Organism *org) {
 
 	double input[NUM_INPUTS];
 	double output[NUM_OUTPUTS];
-	string infilename = "in_out\\NNinput_";
+	string infilename = "src\\in_out\\NNinput_";
 	ostringstream ss;
 	ss << org->gnome->genome_id;
 	infilename = infilename + ss.str();
@@ -25,12 +40,26 @@ bool Game::take_action(Organism *org) {
 	}
 
 	ifstream iFile(infilename.c_str(), ios::in);
+	// reading NN files first and keeping them in an array other than input
 
+    //cout <<"%%%%%%  " <<NUM_INPUTS << endl;
+    char c;
+    double temp;
+    vector<double> v;
 	for(int i = 0; i < NUM_INPUTS; i++){
-		iFile >> input[i];
+		if((iFile >> temp) == 0)
+			cerr << "NUM_INPUTS is wrong or NNinput file" << endl;
+
+		v.push_back(temp);
+		iFile >> c;
 	}
-	iFile >> org->fitness;
 	iFile.close();
+
+    // input of nueral network --> subject to change
+	for(int i = 0; i < NUM_INPUTS - 1; i++)
+        input[ i ] = v[ i ];
+	org->fitness = v[ v.size() - 1 ]; // the last number in NN is fitness
+
 
 	org->net->load_sensors(input);
 	//Activate the net
@@ -63,7 +92,6 @@ Population* Game::Game_test_realtime() {
 
 	ostringstream *fnamebuf;
 	int gen;
-	//CartPole *thecart;
 
 	double highscore;
 
@@ -79,8 +107,8 @@ Population* Game::Game_test_realtime() {
 	start_genome = new Genome(id, iFile);
 	iFile.close();
 
-	cout << "Start Genome: " << start_genome <<" "<< start_genome->genome_id <<" "<< start_genome->genes.size() <<" "
-			<< start_genome->nodes.size()  << endl;
+	//cout << "Start Genome: " << start_genome <<" "<< start_genome->genome_id <<" "<< start_genome->genes.size() <<" "
+		//	<< start_genome->nodes.size()  << endl;
 
 	//Spawn the Population from starter gene
 	cout << "Spawning Population off Genome " << NEAT::pop_size << endl;
@@ -183,7 +211,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 				NEAT::compat_threshold = 0.3;
 
 			cout << "compat_thresh = " << NEAT::compat_threshold << endl;
-
+          //  cout << "******************" << endl;
 			//Go through entire population, reassigning organisms to new species and print their ID into a file
 			string outfilename = "in_out\\agentIDs";
 			ofstream oFile(outfilename.c_str(), ios::out);
@@ -247,6 +275,8 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		}
 	}
     cout << "high_fit_id is " << high_fit_id <<endl; // the highest fitness org id
+    test_time();
 	return high_fit_id;
 
 }
+

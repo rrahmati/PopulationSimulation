@@ -16,6 +16,7 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <string>;
 #include "neat.h"
 #include "population.h"
 #include "experiments.h"
@@ -55,10 +56,12 @@ int main(int argc, char *argv[]) {
   }
 
   //Load in the params
-  NEAT::load_neat_params(argv[1],true);
-
-  cout<<"loaded"<<endl;
+  string s = "src\\";
+  s.append(argv[ 1 ]);
+  NEAT::load_neat_params(s.c_str(),true);
   
+  cout<<s << " loaded"<<endl;
+
   /*
   //Test a genome file on pole balancing
   Genome *g;
@@ -83,7 +86,7 @@ int main(int argc, char *argv[]) {
 
   int choice;
 
-  cout<<"Please choose an experiment: "<<endl;
+/*  cout<<"Please choose an experiment: "<<endl;
   cout<<"1 - 1-pole balancing"<<endl;
   cout<<"2 - 2-pole balancing, velocity info provided"<<endl;
   cout<<"3 - 2-pole balancing, no velocity info provided (non-markov)"<<endl;
@@ -92,7 +95,7 @@ int main(int argc, char *argv[]) {
   cout<<"6 - 3parity"<<endl;
   cout<<"7 - population simulation"<<endl;
   cout<<"Number: ";
-
+*/
  // cin>>choice;
  choice = 7;
   switch ( choice )
@@ -133,7 +136,8 @@ int main(int argc, char *argv[]) {
 
   if (p)
     delete p;
-  cout <<"Game Finished__++____" << endl;
+  cout <<"Game Finished__22=____" << endl;
+
   return(0);
  
 }
