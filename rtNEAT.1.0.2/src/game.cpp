@@ -25,7 +25,7 @@ bool Game::donation_eligibility(Organism *giver, Organism *receiver){ // check i
 
 bool Game::take_action(Organism *org) {
 
-	double input[NUM_INPUTS];
+	double input[NUM_INPUTS-1];
 	double output[NUM_OUTPUTS];
 	string infilename = "src\\in_out\\NNinput_";
 	ostringstream ss;
@@ -33,7 +33,7 @@ bool Game::take_action(Organism *org) {
 	infilename = infilename + ss.str();
 	if(!ifstream(infilename.c_str())) {
 		create_agent(org);
-		for(int i = 0; i < NUM_INPUTS; i++) {
+		for(int i = 0; i < NUM_INPUTS-1; i++) {
 			input[i] = 0;
 		}
 		org->fitness = 0;
@@ -47,9 +47,9 @@ bool Game::take_action(Organism *org) {
     double temp;
     vector<double> v;
 	for(int i = 0; i < NUM_INPUTS; i++){
-		if((iFile >> temp) == 0)
-			cerr << "NUM_INPUTS is wrong or NNinput file" << endl;
-
+//		if((iFile >> temp) == 0)
+//			cerr << "NUM_INPUTS is wrong or NNinput file" << endl;
+		iFile >> temp;
 		v.push_back(temp);
 		iFile >> c;
 	}
@@ -68,10 +68,9 @@ bool Game::take_action(Organism *org) {
 		return false;
 	}
 
-	string outfilename = "in_out\\NNoutput_";
+	string outfilename = "src\\in_out\\NNoutput_";
 	outfilename = outfilename + ss.str();
 	ofstream oFile(outfilename.c_str(), ios::out);
-
 	for(int i = 0; i < NUM_OUTPUTS; i++) {
 		output[i] = (*(org->net->outputs[i])).activation;
 		oFile << output[i] << ",";
@@ -192,7 +191,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 
 	//Now create offspring one at a time, testing each offspring,
 	// and replacing the worst with the new offspring if its better
-	for (offspring_count = 0; offspring_count < 20; offspring_count++) {
+	for (offspring_count = 0; offspring_count < 200; offspring_count++) {
 
 		//Every pop_size reproductions, adjust the compat_thresh to better match the num_species_targer
 		//and reassign the population to new species
@@ -213,16 +212,11 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 			cout << "compat_thresh = " << NEAT::compat_threshold << endl;
           //  cout << "******************" << endl;
 			//Go through entire population, reassigning organisms to new species and print their ID into a file
-			string outfilename = "in_out\\agentIDs";
-			ofstream oFile(outfilename.c_str(), ios::out);
+
 			for (curorg = (pop->organisms).begin();
 					curorg != pop->organisms.end(); ++curorg) {
 				pop->reassign_species(*curorg);
-
-				oFile << (*curorg)->gnome->genome_id << ",";
-
 			}
-			oFile.close();
 		}
 
 		//For printing only
@@ -256,6 +250,21 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 
 		//Now we reestimate the baby's species' fitness
 		new_org->species->estimate_average();
+
+		string outfilename = "src\\in_out\\agentIDs";
+
+		for(int i = 0; i < 100; i++) {
+			ofstream oFile(outfilename.c_str(), ios::out);
+			cout << "Fitness: ";
+			for (curorg = (pop->organisms).begin(); curorg != pop->organisms.end(); ++curorg) {
+				oFile << (*curorg)->gnome->genome_id << ",";
+				take_action(*curorg);
+				cout << (*curorg)->fitness << "\t";
+			}
+			oFile.close();
+			cout << endl;
+			Sleep(100);
+		}
 
 		//Remove the worst organism
 		pop->remove_worst();

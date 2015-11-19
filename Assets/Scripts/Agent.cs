@@ -19,7 +19,7 @@ public class Agent : MonoBehaviour {
     public float rotateSpeed = 10f;
 
     public float coneDegree = 120;
-    public int numRaycast = 5;
+    public int numRaycast = 3;
     public float rayRange = 10;
 
     public int numPieSlice = 3;
@@ -271,15 +271,22 @@ public class Agent : MonoBehaviour {
         string path = NNOutputFileName + "_" + ID;
 
         if (!File.Exists(path))
+        {
+            for (int output = 0; output < outputArray.Length; output++)
+            {
+                outputArray[output] = 0;
+            }
             return;
+        }
 
         StreamReader reader = new StreamReader(File.OpenRead(path));
-
         string line = reader.ReadLine();
         string[] values = line.Split(',');
         for (int output = 0; output < outputArray.Length; output++) {
             outputArray[output] = float.Parse(values[output]);
         }
+        reader.Close();
+        File.Delete(path);
         //print(outputArray);
     }
 

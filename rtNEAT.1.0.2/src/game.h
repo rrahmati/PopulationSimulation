@@ -24,9 +24,9 @@ using namespace NEAT;
 
 class Game {
 
-	int NUM_RAYCASTS = 1;
-	int NUM_INPUTS = NUM_RAYCASTS * 4 + 1;
-	int NUM_OUTPUTS = NUM_RAYCASTS + 2;
+	int NUM_RAYCASTS = 3;
+	int NUM_INPUTS = NUM_RAYCASTS * 3 + 1;
+	int NUM_OUTPUTS = 3;
 
 	Population *game_test(int gens);
 	bool game_progress(Organism *org);
