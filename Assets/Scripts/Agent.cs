@@ -23,10 +23,10 @@ public class Agent : MonoBehaviour {
 
     public float coneDegree = 120;
     public int numRaycast = 3;
-    public float rayRange = 20;
+    public float rayRange = 10;
 
     public int numPieSlice = 3;
-    public float sliceRange = 20;
+    public float sliceRange = 10;
 
 
 
@@ -64,10 +64,13 @@ public class Agent : MonoBehaviour {
     private string NNInputFileName = "rtNEAT.1.0.2\\src\\in_out\\NNinput";
     private string NNOutputFileName = "rtNEAT.1.0.2\\src\\in_out\\NNoutput";
 
+	public float last_time_food = 0;
+	
     // Use this for initialization
     void Start() {
-
+        last_time_food = Time.time;
         // need at least a raycast
+		
         numRaycast = Mathf.Max(numRaycast, 1);
         rays = new Vector3[numRaycast];
 
@@ -227,8 +230,7 @@ public class Agent : MonoBehaviour {
     }
 
     void MoveFB(float value) {
-        value -= .5f;
-        value *= 2f;
+        //value -= .5f;
         Move(transform.forward * value);
     }
 
@@ -261,6 +263,7 @@ public class Agent : MonoBehaviour {
         if (other.gameObject.tag == "Food") {
             foodLevel = Mathf.Min(foodLevel + foodCubeValue, foodMaxLevel);
             Destroy(other.gameObject);
+			last_time_food = Time.time;
         }
     }
 

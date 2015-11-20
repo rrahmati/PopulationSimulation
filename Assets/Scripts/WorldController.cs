@@ -119,7 +119,7 @@ public class WorldController : MonoBehaviour
         for (int i = 0; i < agentList.Count; i++)
         {
             fitnessList[i] = FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>());
-
+            
         }
 
 
@@ -147,9 +147,16 @@ public class WorldController : MonoBehaviour
     float FitnessFunction(Agent agentScript)
     {
         double age = agentScript.lifeTime;
-        double food_gain = agentScript.foodLevel;
+        double food_level = agentScript.foodLevel;
+		float recent = 0;
+		float beta = 0.1f;
         double penalty = 0; // for now
-        double fitness = alpha * food_gain - penalty;
+		if(Time.time - agentScript.last_time_food > 10 && age > 25) // for now it is 10
+		        recent = Time.time - agentScript.last_time_food;
+	    Debug.Log(Time.time );
+		Debug.Log(Time.time - agentScript.last_time_food );
+		
+        double fitness = alpha * food_level - beta * recent - penalty;
         agentScript.fitness = (float) fitness;
         agentScript.hamiltonSatisfied = agentScript.species * 1;
         return 0;
