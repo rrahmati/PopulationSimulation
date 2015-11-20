@@ -119,6 +119,7 @@ public class WorldController : MonoBehaviour
         for (int i = 0; i < agentList.Count; i++)
         {
             fitnessList[i] = FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>());
+
         }
 
 
@@ -150,6 +151,7 @@ public class WorldController : MonoBehaviour
         double penalty = 0; // for now
         double fitness = alpha * food_gain - penalty;
         agentScript.fitness = (float) fitness;
+        agentScript.hamiltonSatisfied = agentScript.species * 1;
         return 0;
     }
 

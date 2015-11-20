@@ -12,6 +12,7 @@ public class Agent : MonoBehaviour {
     public float foodLevelDPS = 0;
     public float foodGiveAwayChunk = 0.0f;
     public float foodCubeValue = 2f;
+    public int hamiltonSatisfied = 0;
 
     public float fitness;
     public float lifeTime = 0;
@@ -28,17 +29,18 @@ public class Agent : MonoBehaviour {
     public float sliceRange = 10;
 
 
-    // Each pie slice have 2 input:
-    // - distance to detected food cube	(maxRange - distancce) / maxRange
-    // - distance to detected agent		(maxRange - distancce) / maxRange
 
     // Each raycast have 1 input:
     // - distance to the detected wall	(maxRange - distancce) / maxRange
 
+    // Each pie slice have 2 input:
+    // - distance to detected food cube	(maxRange - distancce) / maxRange
+    // - distance to detected agent		(maxRange - distancce) / maxRange
+
     public float[] inputArray;
     private int inputsPerPieSlice = 2;
     private int inputsPerRaycast = 1;
-    private int extraInputs = 2;
+    private int extraInputs = 3;
 
 
     // output from neural network
@@ -144,7 +146,10 @@ public class Agent : MonoBehaviour {
         // food detector and agent detector
         // get array of object within radius
         Collider[] colliders = Physics.OverlapSphere(transform.position, sliceRange);
-        int offset = 0;
+        for(int i = 0; i < numPieSlice * 2; i++)
+        {
+            inputArray[numRaycast + i] = 0;
+        }
         // for each detected object, determine what pie slice it belong to and update distance
         foreach (Collider c in colliders) {
             if (c.gameObject == this.gameObject)
@@ -153,6 +158,7 @@ public class Agent : MonoBehaviour {
             // check if object is what we want
             if (c.gameObject.tag == "Food" || c.gameObject.tag == "Agent") {
 
+                int offset = 0;
                 if (c.gameObject.tag == "Agent")
                     offset = numPieSlice;
 
@@ -174,7 +180,7 @@ public class Agent : MonoBehaviour {
             }
         }
 
-        inputArray[numRaycast + 2 * numPieSlice] = fitness;
+        inputArray[numRaycast + 2 * numPieSlice] = foodLevel;
         RaycastHit hit;
         Physics.Raycast(transform.position, transform.forward, out hit, rayRange);
         if (hit.distance > 0) {
@@ -185,6 +191,7 @@ public class Agent : MonoBehaviour {
                     GiveFood(agentScript);
             }
         }
+        inputArray[numRaycast + 2 * numPieSlice + 2] = hamiltonSatisfied;
 
         // no need to reset output array since
         // either a function call will get the output from ANN, or
