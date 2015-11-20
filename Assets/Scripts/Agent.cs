@@ -213,6 +213,7 @@ public class Agent : MonoBehaviour {
 
     void Turn(float directionSpeed) {
 
+        directionSpeed -= .5f;
         directionSpeed *= rotateSpeed;
 
         transform.Rotate(0, directionSpeed * Time.deltaTime, 0);

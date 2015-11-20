@@ -155,13 +155,13 @@ MonoBehaviour:
   foodLevel: 50
   foodMaxLevel: 100
   foodGaveAway: 0
-  foodLevelDPS: .00999999978
+  foodLevelDPS: .300000012
   foodGiveAwayChunk: 0
   foodCubeValue: .5
   fitness: 0
   lifeTime: 0
-  moveSpeed: 20
-  rotateSpeed: 100
+  moveSpeed: 50
+  rotateSpeed: 200
   coneDegree: 120
   numRaycast: 3
   rayRange: 10
@@ -196,11 +196,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: rotateSpeed
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: moveSpeed
-      value: 20
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalScale.x
@@ -216,7 +216,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodLevelDPS
-      value: .00999999978
+      value: .300000012
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodLevel
