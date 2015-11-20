@@ -69,35 +69,46 @@ public class WorldController : MonoBehaviour
 
     void SyncAgents()
     {
+        print("syncing agents...");
         if (!File.Exists(agentIDsFilename))
             return;
-        StreamReader reader = new StreamReader(File.OpenRead(agentIDsFilename));
-
-        string line = reader.ReadLine();
-        string[] values = line.Split(',');
-        ArrayList IDs = new ArrayList();
-        for (int i = 0; i < values.Length; i++)
+        try
         {
-            if(values[i].Length > 0)
-                IDs.Add(System.Convert.ToInt32(values[i]));
-        }
-        for (int i = 0; i < agentList.Count; i++)
-        {
-            int agentID = ((GameObject)agentList[i]).GetComponent<Agent>().ID;
-            if (IDs.Contains(agentID))
+            string line = System.IO.File.ReadAllText(agentIDsFilename);
+            string[] values = line.Split(',');
+            ArrayList IDs = new ArrayList();
+            for (int i = 0; i < values.Length; i++)
             {
-                IDs.Remove(agentID);
+                if (values[i].Length > 0)
+                    IDs.Add(System.Convert.ToInt32(values[i]));
             }
-            else
+            print(IDs.Count);
+            for (int i = 0; i < agentList.Count; i++)
             {
-                Destroy((GameObject)agentList[i]);
-                agentList.Remove((GameObject)agentList[i]);
+                int agentID = ((GameObject)agentList[i]).GetComponent<Agent>().ID;
+                if (IDs.Contains(agentID))
+                {
+                    IDs.Remove(agentID);
+                }
+                else
+                {
+                    Destroy((GameObject)agentList[i]);
+                    agentList.RemoveAt(i);
+                    currentPop--;
+                }
+            }
+            print(IDs.Count);
+            for (int i = 0; i < IDs.Count; i++)
+            {
+                SpawnAgent((int)IDs[i]);
             }
         }
-        for (int i = 0; i < IDs.Count; i++)
+        catch
         {
-            SpawnAgent((int)IDs[i]);
+            print("Could not read the agentIDs file");
         }
+        
+        
     }
 
     void EvaluatePopulation()

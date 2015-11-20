@@ -9,7 +9,9 @@ public class Agent : MonoBehaviour {
     public float foodLevel = 100;
     public float foodMaxLevel = 100;
     public float foodGaveAway = 0;
-    public float foodLevelDPS = 1;
+    public float foodLevelDPS = 0;
+    public float foodGiveAwayChunk = 0.0f;
+    public float foodCubeValue = 2f;
 
     public float fitness;
     public float lifeTime = 0;
@@ -172,7 +174,7 @@ public class Agent : MonoBehaviour {
             }
         }
 
-        inputArray[numRaycast + 2 * numPieSlice] = (foodMaxLevel - foodLevel) / foodMaxLevel;
+        inputArray[numRaycast + 2 * numPieSlice] = fitness;
         RaycastHit hit;
         Physics.Raycast(transform.position, transform.forward, out hit, rayRange);
         if (hit.distance > 0) {
@@ -231,7 +233,7 @@ public class Agent : MonoBehaviour {
     }
     // Agent may die after give away food, (Self-sacrifice)
     void GiveFood(Agent other) {
-        float foodGiveAway = Mathf.Max(Mathf.Min(0.05f, foodLevel), 0.0f);
+        float foodGiveAway = Mathf.Max(Mathf.Min(foodGiveAwayChunk, foodLevel), 0.0f);
 
         // if agent ever five away food, we really want to know
         // especially if it is a self sacrifice action
@@ -248,7 +250,7 @@ public class Agent : MonoBehaviour {
 
     void OnTriggerEnter(Collider other) {
         if (other.gameObject.tag == "Food") {
-            foodLevel = Mathf.Min(foodLevel + 10, foodMaxLevel);
+            foodLevel = Mathf.Min(foodLevel + foodCubeValue, foodMaxLevel);
             Destroy(other.gameObject);
         }
     }
@@ -269,25 +271,32 @@ public class Agent : MonoBehaviour {
 
     void ReadNNOutput() {
         string path = NNOutputFileName + "_" + ID;
-
-        if (!File.Exists(path))
+        try
         {
+            if (!File.Exists(path))
+            {
+                for (int output = 0; output < outputArray.Length; output++)
+                {
+                    outputArray[output] = 0;
+                }
+                return;
+            }
+
+            StreamReader reader = new StreamReader(File.OpenRead(path));
+            string line = reader.ReadLine();
+            string[] values = line.Split(',');
             for (int output = 0; output < outputArray.Length; output++)
             {
-                outputArray[output] = 0;
+                outputArray[output] = float.Parse(values[output]);
             }
-            return;
+            reader.Close();
+            File.Delete(path);
+            //print(outputArray);
         }
-
-        StreamReader reader = new StreamReader(File.OpenRead(path));
-        string line = reader.ReadLine();
-        string[] values = line.Split(',');
-        for (int output = 0; output < outputArray.Length; output++) {
-            outputArray[output] = float.Parse(values[output]);
+        catch
+        {
+            print("Could not read the input file.");
         }
-        reader.Close();
-        File.Delete(path);
-        //print(outputArray);
     }
 
     void WriteNNInput() {

@@ -4,7 +4,7 @@ using System.Collections;
 public class FoodSpawn : MonoBehaviour {
 
 	public GameObject spawnObject;
-	private float timeInterval = .1f;
+	private float timeInterval = 1f;
 	private float time =1f;
 
 
