@@ -253,8 +253,10 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 
 		string outfilename = "src\\in_out\\agentIDs";
 
+		// take action multiple times before removing the worst organism
 		for(int i = 0; i < 100; i++) {
 			ofstream oFile(outfilename.c_str(), ios::out);
+			// print fitness of each agent and take action
 			cout << "Fitness: ";
 			for (curorg = (pop->organisms).begin(); curorg != pop->organisms.end(); ++curorg) {
 				oFile << (*curorg)->gnome->genome_id << ",";
