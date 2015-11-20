@@ -23,10 +23,10 @@ public class Agent : MonoBehaviour {
 
     public float coneDegree = 120;
     public int numRaycast = 3;
-    public float rayRange = 10;
+    public float rayRange = 20;
 
     public int numPieSlice = 3;
-    public float sliceRange = 10;
+    public float sliceRange = 20;
 
 
 
@@ -227,7 +227,8 @@ public class Agent : MonoBehaviour {
     }
 
     void MoveFB(float value) {
-        //value -= .5f;
+        value -= .5f;
+        value *= 2f;
         Move(transform.forward * value);
     }
 

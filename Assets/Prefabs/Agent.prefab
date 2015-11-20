@@ -158,15 +158,16 @@ MonoBehaviour:
   foodLevelDPS: .300000012
   foodGiveAwayChunk: 0
   foodCubeValue: .5
+  hamiltonSatisfied: 0
   fitness: 0
   lifeTime: 0
   moveSpeed: 50
   rotateSpeed: 200
   coneDegree: 120
   numRaycast: 3
-  rayRange: 10
+  rayRange: 20
   numPieSlice: 3
-  sliceRange: 10
+  sliceRange: 20
   inputArray: []
   outputArray: []
   died: 0
@@ -225,6 +226,14 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: foodCubeValue
       value: .5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: sliceRange
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: rayRange
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
