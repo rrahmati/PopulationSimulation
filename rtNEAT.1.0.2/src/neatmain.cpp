@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 
   if (p)
     delete p;
-  cout <<"Game Finished__22=____" << endl;
+  cout <<"Game Finished" << endl;
 
   return(0);
  

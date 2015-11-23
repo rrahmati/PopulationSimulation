@@ -12,8 +12,9 @@ public class Agent : MonoBehaviour {
     public float foodLevelDPS = 0;
     public float foodGiveAwayChunk = 0.0f;
     public float foodCubeValue = 2f;
+    public double food_granted = 4D; // two cubes of food
     public int hamiltonSatisfied = 0;
-
+    public double eps = 0.000001D;
     public float fitness;
     public float lifeTime = 0;
     private float time = 0;
@@ -37,7 +38,7 @@ public class Agent : MonoBehaviour {
     // - distance to detected food cube	(maxRange - distancce) / maxRange
     // - distance to detected agent		(maxRange - distancce) / maxRange
 
-    public float[] inputArray;
+    public double[] inputArray;
     private int inputsPerPieSlice = 2;
     private int inputsPerRaycast = 1;
     private int extraInputs = 3;
@@ -74,7 +75,7 @@ public class Agent : MonoBehaviour {
         numRaycast = Mathf.Max(numRaycast, 1);
         rays = new Vector3[numRaycast];
 
-        inputArray = new float[numRaycast * inputsPerRaycast + numPieSlice * inputsPerPieSlice + extraInputs];
+        inputArray = new double[numRaycast * inputsPerRaycast + numPieSlice * inputsPerPieSlice + extraInputs];
 
         //outputNum += numRaycast + 1;
         outputArray = new float[outputNum];
@@ -100,6 +101,20 @@ public class Agent : MonoBehaviour {
 
     }
 
+    double Check_hamilton(double giver_foodL, int giver_sp, double rec_foodL, int rec_sp) {
+        if (rec_sp == -1 || giver_sp != rec_sp || giver_foodL < food_granted) // the detected obj is not an agent or two agents not in the same specious or ... --> donate should not happen
+            return -1000f;
+        giver_foodL += eps;
+        rec_foodL += eps;
+        double giver_future_foodL = giver_foodL - food_granted + eps;
+        double rec_future_foodL = rec_foodL + food_granted + eps;
+        double B = 1 / rec_foodL - 1 / rec_future_foodL;
+        double C = 1 / giver_foodL + 1 / giver_future_foodL;
+        if (B - 0.9 * C > 0)
+            hamiltonSatisfied = 1;
+        else hamiltonSatisfied = 0;
+        return (B - 0.9 * C);
+    }
     // Update is called once per frame
     void Update() {
 
@@ -185,16 +200,21 @@ public class Agent : MonoBehaviour {
 
         inputArray[numRaycast + 2 * numPieSlice] = foodLevel;
         RaycastHit hit;
+        float detected_agent_food_level = 1000f;
+        int sp = -1;
         Physics.Raycast(transform.position, transform.forward, out hit, rayRange);
         if (hit.distance > 0) {
             if (hit.transform.gameObject.tag == "Agent") {
                 Agent agentScript = hit.transform.gameObject.GetComponent<Agent>();
-                inputArray[numRaycast + 2 * numPieSlice + 1] = (foodMaxLevel - agentScript.foodLevel) / foodMaxLevel;
+               // inputArray[numRaycast + 2 * numPieSlice + 1] = (foodMaxLevel - agentScript.foodLevel) / foodMaxLevel;
+                detected_agent_food_level = agentScript.foodLevel;
+                sp = agentScript.species;
+                inputArray[numRaycast + 2 * numPieSlice + 1] = agentScript.foodLevel; // food level of detected agent
                 if (outputArray[2] > 0)
                     GiveFood(agentScript);
             }
         }
-        inputArray[numRaycast + 2 * numPieSlice + 2] = hamiltonSatisfied;
+        inputArray[numRaycast + 2 * numPieSlice + 2] = Check_hamilton(foodLevel, species, detected_agent_food_level, sp);
 
         // no need to reset output array since
         // either a function call will get the output from ANN, or

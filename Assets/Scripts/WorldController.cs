@@ -45,7 +45,7 @@ public class WorldController : MonoBehaviour
 
     }
 
-    void SpawnAgent(int ID)
+    void SpawnAgent(int ID, int sp)
     {
         if (currentPop >= population)
             return;
@@ -60,7 +60,7 @@ public class WorldController : MonoBehaviour
             // Initialize ID, species for the agent
             Agent script = gameObj.GetComponent<Agent>();
             script.ID = ID;
-
+            script.species = sp;
 
             agentList.Add(gameObj);
             currentPop++;
@@ -77,10 +77,17 @@ public class WorldController : MonoBehaviour
             string line = System.IO.File.ReadAllText(agentIDsFilename);
             string[] values = line.Split(',');
             ArrayList IDs = new ArrayList();
+            ArrayList SPs = new ArrayList();
+
             for (int i = 0; i < values.Length; i++)
             {
                 if (values[i].Length > 0)
-                    IDs.Add(System.Convert.ToInt32(values[i]));
+                {
+                    if (i % 2 == 0)//skip species
+                        IDs.Add(System.Convert.ToInt32(values[i]));
+                    else
+                        SPs.Add(System.Convert.ToInt32(values[i]));
+                }
             }
             print(IDs.Count);
             for (int i = 0; i < agentList.Count; i++)
@@ -100,7 +107,7 @@ public class WorldController : MonoBehaviour
             print(IDs.Count);
             for (int i = 0; i < IDs.Count; i++)
             {
-                SpawnAgent((int)IDs[i]);
+                SpawnAgent((int)IDs[i], (int)SPs[i]);
             }
         }
         catch
@@ -151,7 +158,7 @@ public class WorldController : MonoBehaviour
 		float recent = 0;
 		float beta = 0.1f;
         double penalty = 0; // for now
-		if(Time.time - agentScript.last_time_food > 10 && age > 25) // for now it is 10
+		if(Time.time - agentScript.last_time_food > 10 && age > 15) // for now it is 10
 		        recent = Time.time - agentScript.last_time_food;
 	    Debug.Log(Time.time );
 		Debug.Log(Time.time - agentScript.last_time_food );

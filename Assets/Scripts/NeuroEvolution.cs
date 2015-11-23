@@ -34,7 +34,7 @@ public class NeuroEvolution : MonoBehaviour {
     void writeNNInput()
     {
         string lines = "";
-        float[] inputArray = GameObject.Find("Agent").GetComponent<Agent>().inputArray;
+        double[] inputArray = GameObject.Find("Agent").GetComponent<Agent>().inputArray;
         foreach (float input in inputArray)
         {
             lines += input + ",";

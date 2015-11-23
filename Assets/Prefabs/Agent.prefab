@@ -161,8 +161,8 @@ MonoBehaviour:
   hamiltonSatisfied: 0
   fitness: 0
   lifeTime: 0
-  moveSpeed: 50
-  rotateSpeed: 200
+  moveSpeed: 30
+  rotateSpeed: 100
   coneDegree: 120
   numRaycast: 3
   rayRange: 20
@@ -171,6 +171,7 @@ MonoBehaviour:
   inputArray: []
   outputArray: []
   died: 0
+  last_time_food: 0
 --- !u!136 &13694126
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -197,11 +198,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: rotateSpeed
-      value: 200
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: moveSpeed
-      value: 50
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalScale.x
