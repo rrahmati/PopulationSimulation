@@ -158,10 +158,12 @@ MonoBehaviour:
   foodLevelDPS: .300000012
   foodGiveAwayChunk: 0
   foodCubeValue: .5
+  food_granted: 4
   hamiltonSatisfied: 0
+  eps: 9.9999999999999995e-07
   fitness: 0
   lifeTime: 0
-  moveSpeed: 30
+  moveSpeed: 40
   rotateSpeed: 100
   coneDegree: 120
   numRaycast: 3
@@ -202,7 +204,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: moveSpeed
-      value: 30
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalScale.x

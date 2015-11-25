@@ -23,7 +23,7 @@ public class WorldController : MonoBehaviour
     public float EvaluationRateInSec = 30;
     private float timer = 0;
 
-    private float[] fitnessList;
+    private double[] fitnessList;
 
     // Use this for initialization
     void Start()
@@ -121,11 +121,12 @@ public class WorldController : MonoBehaviour
     void EvaluatePopulation()
     {
         // get data from each agent
-        float[] fitnessList = new float[agentList.Count];
+        double[] fitnessList = new double[agentList.Count];
 
         for (int i = 0; i < agentList.Count; i++)
         {
-            fitnessList[i] = FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>());
+            fitnessList[i] = Inclusive_FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>()); 
+            // either Inclusive_FitnessFunction or FitnessFunction 
             
         }
 
@@ -151,7 +152,7 @@ public class WorldController : MonoBehaviour
         return (b - c / r) * Hamilton_rate;
 
     }
-    float FitnessFunction(Agent agentScript)
+    double FitnessFunction(Agent agentScript)
     {
         double age = agentScript.lifeTime;
         double food_level = agentScript.foodLevel;
@@ -164,9 +165,25 @@ public class WorldController : MonoBehaviour
 		Debug.Log(Time.time - agentScript.last_time_food );
 		
         double fitness = alpha * food_level - beta * recent - penalty;
-        agentScript.fitness = (float) fitness;
+        agentScript.fitness = fitness;
         agentScript.hamiltonSatisfied = agentScript.species * 1;
-        return 0;
+        return fitness;
+    }
+    double Inclusive_FitnessFunction(Agent agentScript)
+    {
+        double fit = FitnessFunction(agentScript);
+        double r = 0.5;
+        double same_sp_fit = 0; //same_sp_fit would be the sum of fitness of those agent with the same species as agentScript
+        double pop_fit = 0; // sum of fitness of whole population
+         for (int i = 0; i < agentList.Count; i++)
+            {
+                if (((GameObject)agentList[i]).GetComponent<Agent>().species == agentScript.species)
+                    same_sp_fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness; // I am not sure whether these fitness are already updated or not
+                pop_fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness; 
+         }
+         double inc_fitn = fit + r * same_sp_fit / pop_fit;
+         agentScript.fitness = inc_fitn;
+         return inc_fitn;
     }
 
     void WriteFitnessInput()

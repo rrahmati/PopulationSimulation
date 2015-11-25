@@ -15,7 +15,7 @@ public class Agent : MonoBehaviour {
     public double food_granted = 4D; // two cubes of food
     public int hamiltonSatisfied = 0;
     public double eps = 0.000001D;
-    public float fitness;
+    public double fitness;
     public float lifeTime = 0;
     private float time = 0;
 
