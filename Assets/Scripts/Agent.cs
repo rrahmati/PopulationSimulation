@@ -66,6 +66,8 @@ public class Agent : MonoBehaviour {
     private string NNOutputFileName = "rtNEAT.1.0.2\\src\\in_out\\NNoutput";
 
 	public float last_time_food = 0;
+
+    public float arrowPeriod = 0.5f;
 	
     // Use this for initialization
     void Start() {
@@ -271,6 +273,12 @@ public class Agent : MonoBehaviour {
         Debug.Log("Agent " + ID + " just give a way " + foodGiveAway + " food to Agent " + other.ID);
         if (foodGiveAway < 10)
             Debug.Log("Agent " + ID + " just sacrifice its life for Agent " + other.ID);
+
+
+        Debug.DrawRay(transform.position, other.transform.position - transform.position, Color.blue, arrowPeriod);
+        Vector3 tail = transform.position - other.transform.position;
+        Debug.DrawRay(other.transform.position, Quaternion.AngleAxis(-30, Vector3.up) * tail.normalized, Color.blue, arrowPeriod);
+        Debug.DrawRay(other.transform.position, Quaternion.AngleAxis(30, Vector3.up) * tail.normalized, Color.blue, arrowPeriod);
 
         other.foodLevel = Mathf.Min(foodMaxLevel, other.foodLevel + foodGiveAway);
         foodLevel -= foodGiveAway;

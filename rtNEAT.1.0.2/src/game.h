@@ -24,9 +24,9 @@ using namespace NEAT;
 
 class Game {
 
-	int NUM_RAYCASTS = 3;
-	int NUM_INPUTS = NUM_RAYCASTS * 3 + 1;
-	int NUM_OUTPUTS = 4;
+	static const int NUM_RAYCASTS = 3;
+	static const int NUM_INPUTS = NUM_RAYCASTS * 3 + 1;
+	static const int NUM_OUTPUTS = 4;
 
 	Population *game_test(int gens);
 	bool game_progress(Organism *org);
