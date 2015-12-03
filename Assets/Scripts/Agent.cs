@@ -105,7 +105,7 @@ public class Agent : MonoBehaviour {
 
     double Check_hamilton(double giver_foodL, int giver_sp, double rec_foodL, int rec_sp) {
         if (rec_sp == -1 || giver_sp != rec_sp || giver_foodL < food_granted) // the detected obj is not an agent or two agents not in the same specious or ... --> donate should not happen
-            return -1000f;
+            return -1f;
         giver_foodL += eps;
         rec_foodL += eps;
         double giver_future_foodL = giver_foodL - food_granted + eps;
@@ -200,10 +200,12 @@ public class Agent : MonoBehaviour {
             }
         }
 
-        inputArray[numRaycast + 2 * numPieSlice] = foodLevel;
+        inputArray[numRaycast + 2 * numPieSlice] = (foodMaxLevel - foodLevel) / foodMaxLevel;
         RaycastHit hit;
-        float detected_agent_food_level = 1000f;
+        float detected_agent_food_level = foodMaxLevel;
         int sp = -1;
+        // reset detected agent food level input
+        inputArray[numRaycast + 2 * numPieSlice + 1] = 0;
         Physics.Raycast(transform.position, transform.forward, out hit, rayRange);
         if (hit.distance > 0) {
             if (hit.transform.gameObject.tag == "Agent") {
@@ -211,7 +213,7 @@ public class Agent : MonoBehaviour {
                // inputArray[numRaycast + 2 * numPieSlice + 1] = (foodMaxLevel - agentScript.foodLevel) / foodMaxLevel;
                 detected_agent_food_level = agentScript.foodLevel;
                 sp = agentScript.species;
-                inputArray[numRaycast + 2 * numPieSlice + 1] = agentScript.foodLevel; // food level of detected agent
+                inputArray[numRaycast + 2 * numPieSlice + 1] = (agentScript.foodMaxLevel - agentScript.foodLevel) / agentScript.foodMaxLevel; // food level of detected agent
                 if (outputArray[2] > 0)
                     GiveFood(agentScript);
             }
@@ -271,7 +273,7 @@ public class Agent : MonoBehaviour {
         // if agent ever five away food, we really want to know
         // especially if it is a self sacrifice action
         Debug.Log("Agent " + ID + " just give a way " + foodGiveAway + " food to Agent " + other.ID);
-        if (foodGiveAway < 10)
+        if (foodGiveAway < foodGiveAwayChunk)
             Debug.Log("Agent " + ID + " just sacrifice its life for Agent " + other.ID);
 
 

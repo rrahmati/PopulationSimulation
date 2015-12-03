@@ -71,7 +71,7 @@ bool Game::take_action(Organism *org) {
 	string outfilename = "src\\in_out\\NNoutput_";
 	outfilename = outfilename + ss.str();
 	ofstream oFile(outfilename.c_str(), ios::out);
-	for(int i = 0; i < NUM_OUTPUTS-1; i++) {
+	for(int i = 0; i < NUM_OUTPUTS; i++) {
 		output[i] = (*(org->net->outputs[i])).activation;
 		oFile << output[i] << ",";
 	}

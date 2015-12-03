@@ -8,6 +8,6 @@ public class Test : MonoBehaviour {
 	private static extern float foofoo(float a, float b);
 
 	void Awake(){
-		Debug.Log(foofoo(5,foofoo(5,20)));
+		//Debug.Log(foofoo(5,foofoo(5,20)));
 	}
 }

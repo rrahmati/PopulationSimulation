@@ -28,7 +28,6 @@ public class NeuroEvolution : MonoBehaviour {
         {
             outputArray[output] = int.Parse(values[output]);
         }
-        print(outputArray);
     }
 
     void writeNNInput()

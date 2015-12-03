@@ -11,8 +11,10 @@ public class WorldController : MonoBehaviour
     public float Hamilton_rate = 10;
     public float alpha = 1;
     public float beta = 1;
+    public float deviationFromOrigin = 40;
     public GameObject spawnPoint;
     public GameObject spawnObject;
+
 
     private string NNInputFileName = "rtNEAT.1.0.2\\src\\in_out\\Fitness_input";
     private string NNOutputFileName = "rtNEAT.1.0.2\\src\\Fitness_output";
@@ -51,11 +53,12 @@ public class WorldController : MonoBehaviour
             return;
 
         // Check the spawn location, if nothing there, then spawn the object
-        if (!Physics.CheckSphere(spawnPoint.transform.position, 0.5f))
+        Vector3 spawnPosition = spawnPoint.transform.position + new Vector3(Random.Range(-deviationFromOrigin, deviationFromOrigin), 0, Random.Range(-deviationFromOrigin, deviationFromOrigin));
+        if (!Physics.CheckSphere(spawnPosition, 0.5f))
         {
 
             // spawn Agent
-            GameObject gameObj = (GameObject)Instantiate(spawnObject, spawnPoint.transform.position, spawnPoint.transform.rotation);
+            GameObject gameObj = (GameObject)Instantiate(spawnObject, spawnPosition, spawnPoint.transform.rotation);
 
             // Initialize ID, species for the agent
             Agent script = gameObj.GetComponent<Agent>();
@@ -89,7 +92,6 @@ public class WorldController : MonoBehaviour
                         SPs.Add(System.Convert.ToInt32(values[i]));
                 }
             }
-            print(IDs.Count);
             for (int i = 0; i < agentList.Count; i++)
             {
                 int agentID = ((GameObject)agentList[i]).GetComponent<Agent>().ID;
@@ -104,7 +106,6 @@ public class WorldController : MonoBehaviour
                     currentPop--;
                 }
             }
-            print(IDs.Count);
             for (int i = 0; i < IDs.Count; i++)
             {
                 SpawnAgent((int)IDs[i], (int)SPs[i]);
@@ -125,9 +126,10 @@ public class WorldController : MonoBehaviour
 
         for (int i = 0; i < agentList.Count; i++)
         {
-            fitnessList[i] = Inclusive_FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>()); 
+            //fitnessList[i] = Inclusive_FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>());
+            fitnessList[i] = FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>());
             // either Inclusive_FitnessFunction or FitnessFunction 
-            
+
         }
 
 
@@ -161,8 +163,8 @@ public class WorldController : MonoBehaviour
         double penalty = 0; // for now
 		if(Time.time - agentScript.last_time_food > 10 && age > 15) // for now it is 10
 		        recent = Time.time - agentScript.last_time_food;
-	    Debug.Log(Time.time );
-		Debug.Log(Time.time - agentScript.last_time_food );
+	 //   Debug.Log(Time.time );
+		//Debug.Log(Time.time - agentScript.last_time_food );
 		
         double fitness = alpha * food_level - beta * recent - penalty;
         agentScript.fitness = fitness;
