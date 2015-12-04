@@ -15,7 +15,7 @@ public class WorldController : MonoBehaviour
     public float deviationFromOrigin = 40;
     public GameObject spawnPoint;
     public GameObject spawnObject;
-
+    public float last_check=0;
 
     private string NNInputFileName = "rtNEAT.1.0.2\\src\\in_out\\Fitness_input";
     private string NNOutputFileName = "rtNEAT.1.0.2\\src\\Fitness_output";
@@ -132,8 +132,11 @@ public class WorldController : MonoBehaviour
             // either Inclusive_FitnessFunction or FitnessFunction 
 
         }
-
-        AVG_fit_generosity_species();
+        if (Time.time - last_check > 30) // every 30 seconds print the information
+        {
+            AVG_fit_generosity_species();
+            last_check = Time.time;
+        }
     }
 
     double alt_penalize(double giver_old_food_level, double food_granted, double rec_old_food_level, double r)
@@ -216,6 +219,7 @@ public class WorldController : MonoBehaviour
             generosity /= np;
             Debug.Log(s + " avg_fit= " + fit + " avg_generosity= " + generosity);
         }
+        Debug.Log("finished");
 
     }
 

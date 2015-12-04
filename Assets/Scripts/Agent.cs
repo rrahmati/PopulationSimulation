@@ -9,10 +9,9 @@ public class Agent : MonoBehaviour {
     public float foodLevel = 100;
     public float foodMaxLevel = 100;
     public float foodGaveAway = 0;
-    public float foodLevelDPS = 0;
-    public float foodGiveAwayChunk = 0.0f;
+    public float foodLevelDPS = 0; 
     public float foodCubeValue = 2f;
-    public double food_granted = 4D; // two cubes of food
+    public float food_granted = 4f; // two cubes of food // it should be enough to be helpful rather than a waste
     public int hamiltonSatisfied = 0;
     public double eps = 0.000001D;
     public double fitness;
@@ -103,19 +102,22 @@ public class Agent : MonoBehaviour {
 
     }
 
-    double Check_hamilton(double giver_foodL, int giver_sp, double rec_foodL, int rec_sp) {
-        if (rec_sp == -1 || giver_sp != rec_sp || giver_foodL < food_granted) // the detected obj is not an agent or two agents not in the same specious or ... --> donate should not happen
-            return -1f;
-        giver_foodL += eps;
+    float Check_hamilton(float giver_foodL, int giver_sp, double rec_foodL, int rec_sp) {
+        if (rec_sp == -1 || giver_sp != rec_sp /*|| giver_foodL < food_granted*/) // the detected obj is not an agent or two agents not in the same specious or ... --> donate should not happen
+            return 0f; // if Hamiltonian is not satisfied
+       // giver_foodL += eps;
         rec_foodL += eps;
-        double giver_future_foodL = giver_foodL - food_granted + eps;
-        double rec_future_foodL = rec_foodL + food_granted + eps;
-        double B = 1 / rec_foodL - 1 / rec_future_foodL;
-        double C = 1 / giver_foodL + 1 / giver_future_foodL;
-        if (B - 0.9 * C > 0)
+        double giver_future_foodL = giver_foodL - food_granted;
+        if (giver_future_foodL <= 0f)
+            giver_future_foodL = eps;
+        double rec_future_foodL = rec_foodL + Mathf.Min(food_granted, giver_foodL);
+        double B = 1 / rec_foodL /*- 1 / rec_future_foodL*/;
+        double C = /*1 / giver_foodL +*/ 1 / giver_future_foodL;
+        if (B - 0.6 * C >= 0)
             hamiltonSatisfied = 1;
         else hamiltonSatisfied = 0;
-        return (B - 0.9 * C);
+        Debug.Log(rec_foodL + " "+giver_foodL+ " "+ B + " ****** " + C + " " + (B - 0.7 * C));
+        return hamiltonSatisfied;
     }
     // Update is called once per frame
     void Update() {
@@ -214,11 +216,11 @@ public class Agent : MonoBehaviour {
                 detected_agent_food_level = agentScript.foodLevel;
                 sp = agentScript.species;
                 inputArray[numRaycast + 2 * numPieSlice + 1] = (agentScript.foodMaxLevel - agentScript.foodLevel) / agentScript.foodMaxLevel; // food level of detected agent
-                if (outputArray[2] > 0)
+                if (outputArray[2] > 0 && Check_hamilton(foodLevel, species, detected_agent_food_level, sp) > 0)
                     GiveFood(agentScript);
             }
         }
-        inputArray[numRaycast + 2 * numPieSlice + 2] = Check_hamilton(foodLevel, species, detected_agent_food_level, sp);
+        //inputArray[numRaycast + 2 * numPieSlice + 2] = Check_hamilton(foodLevel, species, detected_agent_food_level, sp);
 
         // no need to reset output array since
         // either a function call will get the output from ANN, or
@@ -263,19 +265,17 @@ public class Agent : MonoBehaviour {
     }
 
 
-    void GiveFood() {
-
-    }
+    
     // Agent may die after give away food, (Self-sacrifice)
     void GiveFood(Agent other) {
-        float foodGiveAway = Mathf.Max(Mathf.Min(foodGiveAwayChunk, foodLevel), 0.0f);
+        float foodGiveAway = Mathf.Max(Mathf.Min(food_granted, foodLevel), 0.0f);
 
         // if agent ever five away food, we really want to know
         // especially if it is a self sacrifice action
-        Debug.Log("Agent " + ID + " just give a way " + foodGiveAway + " food to Agent " + other.ID);
-        if (foodGiveAway < foodGiveAwayChunk)
-            Debug.Log("Agent " + ID + " just sacrifice its life for Agent " + other.ID);
-
+        if (foodGiveAway < food_granted)
+            Debug.Log("Agent " + ID + " sacrificed its life for the Agent " + other.ID);
+        else
+            Debug.Log("Agent " + ID + " gave " + foodGiveAway + " food to the Agent " + other.ID);
 
         Debug.DrawRay(transform.position, other.transform.position - transform.position, Color.blue, arrowPeriod);
         Vector3 tail = transform.position - other.transform.position;
