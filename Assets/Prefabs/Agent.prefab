@@ -159,9 +159,9 @@ MonoBehaviour:
   foodLevel: 50
   foodMaxLevel: 100
   foodGaveAway: 0
-  foodLevelDPS: .300000012
-  foodGiveAwayChunk: 1
-  foodCubeValue: .5
+  foodLevelDPS: .100000001
+  foodGiveAwayChunk: .5
+  foodCubeValue: 2
   food_granted: 4
   hamiltonSatisfied: 0
   eps: 9.9999999999999995e-07
@@ -225,7 +225,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodLevelDPS
-      value: .300000012
+      value: .100000001
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodLevel
@@ -233,7 +233,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodCubeValue
-      value: .5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: sliceRange
@@ -249,7 +249,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodGiveAwayChunk
-      value: 1
+      value: .5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
