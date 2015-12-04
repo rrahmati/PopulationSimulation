@@ -167,7 +167,7 @@ MonoBehaviour:
   eps: 9.9999999999999995e-07
   fitness: 0
   lifeTime: 0
-  moveSpeed: 40
+  moveSpeed: 30
   rotateSpeed: 100
   coneDegree: 120
   numRaycast: 3
@@ -209,7 +209,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: moveSpeed
-      value: 40
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalScale.x
