@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.IO;
+using System.Collections.Generic;
 
 public class WorldController : MonoBehaviour
 {
@@ -115,8 +116,8 @@ public class WorldController : MonoBehaviour
         {
             print("Could not read the agentIDs file");
         }
-        
-        
+
+
     }
 
     void EvaluatePopulation()
@@ -132,7 +133,7 @@ public class WorldController : MonoBehaviour
 
         }
 
-
+        AVG_fit_generosity_species();
     }
 
     double alt_penalize(double giver_old_food_level, double food_granted, double rec_old_food_level, double r)
@@ -158,14 +159,14 @@ public class WorldController : MonoBehaviour
     {
         double age = agentScript.lifeTime;
         double food_level = agentScript.foodLevel;
-		float recent = 0;
-		float beta = 0.1f;
+        float recent = 0;
+        float beta = 0.1f;
         double penalty = 0; // for now
-		if(Time.time - agentScript.last_time_food > 10 && age > 15) // for now it is 10
-		        recent = Time.time - agentScript.last_time_food;
-	 //   Debug.Log(Time.time );
-		//Debug.Log(Time.time - agentScript.last_time_food );
-		
+        if (Time.time - agentScript.last_time_food > 10 && age > 15) // for now it is 10
+            recent = Time.time - agentScript.last_time_food;
+        //   Debug.Log(Time.time );
+        //Debug.Log(Time.time - agentScript.last_time_food );
+
         double fitness = alpha * food_level - beta * recent - penalty;
         agentScript.fitness = fitness;
         agentScript.hamiltonSatisfied = agentScript.species * 1;
@@ -177,15 +178,45 @@ public class WorldController : MonoBehaviour
         double r = 0.5;
         double same_sp_fit = 0; //same_sp_fit would be the sum of fitness of those agent with the same species as agentScript
         double pop_fit = 0; // sum of fitness of whole population
-         for (int i = 0; i < agentList.Count; i++)
+        for (int i = 0; i < agentList.Count; i++)
+        {
+            if (((GameObject)agentList[i]).GetComponent<Agent>().species == agentScript.species)
+                same_sp_fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness; // I am not sure whether these fitness are already updated or not
+            pop_fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness;
+        }
+        double inc_fitn = fit + r * same_sp_fit / pop_fit;
+        agentScript.fitness = inc_fitn;
+        return inc_fitn;
+    }
+    void AVG_fit_generosity_species()
+    {
+        HashSet<int> sp = new HashSet<int>();
+
+        for (int i = 0; i < agentList.Count; i++)
+        {
+            int s = ((GameObject)agentList[i]).GetComponent<Agent>().species;
+            if (!sp.Contains(s))
+                sp.Add(s);
+        }
+        foreach (int s in sp)
+        {
+            double fit = 0;
+            double generosity = 0;
+            int np = 0;
+            for (int i = 0; i < agentList.Count; i++)
             {
-                if (((GameObject)agentList[i]).GetComponent<Agent>().species == agentScript.species)
-                    same_sp_fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness; // I am not sure whether these fitness are already updated or not
-                pop_fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness; 
-         }
-         double inc_fitn = fit + r * same_sp_fit / pop_fit;
-         agentScript.fitness = inc_fitn;
-         return inc_fitn;
+                if (((GameObject)agentList[i]).GetComponent<Agent>().species == s)
+                {
+                    np++;
+                    generosity += ((GameObject)agentList[i]).GetComponent<Agent>().foodGaveAway;
+                    fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness; // I am not sure whether these fitness are already updated or not
+                }
+            }
+            fit /= np;
+            generosity /= np;
+            Debug.Log(s + " avg_fit= " + fit + " avg_generosity= " + generosity);
+        }
+
     }
 
     void WriteFitnessInput()
