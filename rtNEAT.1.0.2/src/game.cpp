@@ -157,8 +157,8 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 	//thecart->generalization_test = false;
 
 	//We try to keep the number of species constant at this number
-	int num_species_target = NEAT::pop_size / 15;
-
+	int num_species_target = NEAT::pop_size / 5;
+    cout <<"****** pop_size: " << pop_size << " num_species_target: " << num_species_target << endl;
 	//This is where we determine the frequency of compatibility threshold adjustment
 	int compat_adjust_frequency = NEAT::pop_size / 10;
 	if (compat_adjust_frequency < 1)
@@ -209,7 +209,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 			if (NEAT::compat_threshold < 0.3)
 				NEAT::compat_threshold = 0.3;
 
-			cout << "compat_thresh = " << NEAT::compat_threshold << endl;
+			cout << "^^^^^^ compat_thresh = " << NEAT::compat_threshold <<" num_species= " <<num_species << endl;
           //  cout << "******************" << endl;
 			//Go through entire population, reassigning organisms to new species and print their ID into a file
 
@@ -222,8 +222,8 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		//For printing only
 		for (curspec = (pop->species).begin(); curspec != (pop->species).end();
 				curspec++) {
-			cout << "Species " << (*curspec)->id << " size"
-					<< (*curspec)->organisms.size() << " average= "
+			cout << "Species " << (*curspec)->id << " size "
+					<< (*curspec)->organisms.size() << " average fitness= "
 					<< (*curspec)->average_est << endl;
 		}
 
@@ -257,14 +257,14 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		for(int i = 0; i < 100; i++) {
 			ofstream oFile(outfilename.c_str(), ios::out);
 			// print fitness of each agent and take action
-			cout << "Fitness: ";
+			//cout << "Fitness: ";
 			for (curorg = (pop->organisms).begin(); curorg != pop->organisms.end(); ++curorg) {
 				oFile << (*curorg)->gnome->genome_id << "," << (*curorg)->species->id<<",";
 				take_action(*curorg);
-				cout << (*curorg)->fitness << " species: " << (*curorg)->species->id<< "\t";
+				//cout << (*curorg)->fitness << " species: " << (*curorg)->species->id<< "\t";
 			}
 			oFile.close();
-			cout << endl;
+			//cout << endl;
 			Sleep(10);
 		}
 
