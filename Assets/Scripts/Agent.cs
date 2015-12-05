@@ -242,8 +242,13 @@ public class Agent : MonoBehaviour {
         if (outputArray[1] > 0)
             MoveFB(outputArray[1]);
 
-
-
+        // agent fall off the plain
+        // set food level to 0 and fitness to -1
+        // so it can be replaced by other
+        if (transform.position.y < 0) {
+            foodLevel = 0;
+            fitness = -1;
+        }
         // save input to file
         WriteNNInput();
         // get output from file
