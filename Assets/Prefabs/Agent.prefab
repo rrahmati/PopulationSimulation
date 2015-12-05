@@ -160,7 +160,6 @@ MonoBehaviour:
   foodMaxLevel: 100
   foodGaveAway: 0
   foodLevelDPS: .100000001
-  foodGiveAwayChunk: .5
   foodCubeValue: 2
   food_granted: 4
   hamiltonSatisfied: 0
@@ -168,7 +167,7 @@ MonoBehaviour:
   fitness: 0
   lifeTime: 0
   moveSpeed: 30
-  rotateSpeed: 100
+  rotateSpeed: 70
   coneDegree: 120
   numRaycast: 3
   rayRange: 20
@@ -205,7 +204,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: rotateSpeed
-      value: 100
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: moveSpeed
