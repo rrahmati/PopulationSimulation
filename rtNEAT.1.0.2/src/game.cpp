@@ -6,15 +6,6 @@
 void Game::create_agent(Organism * org) {
 
 }
-void Game::test_time(){
-	for(;;)
-	    {
-	    cout <<"hi" << endl;
-	    // Sleep for 50*1000ms
-	    Sleep(1000); // Sleep for 1*1000ms
-
-	    }
-}
 
 bool Game::donation_eligibility(Organism *giver, Organism *receiver){ // check if giver can donate food to receiver
 	// both orgs should belong to the same specious (also food level of giver should be higher)
@@ -254,18 +245,28 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		string outfilename = "src\\in_out\\agentIDs";
 
 		// take action multiple times before removing the worst organism
-		for(int i = 0; i < 100; i++) {
+		for(int i = 0; i < 200; i++) {
 			ofstream oFile(outfilename.c_str(), ios::out);
 			// print fitness of each agent and take action
 			//cout << "Fitness: ";
 			for (curorg = (pop->organisms).begin(); curorg != pop->organisms.end(); ++curorg) {
 				oFile << (*curorg)->gnome->genome_id << "," << (*curorg)->species->id<<",";
-				take_action(*curorg);
-				//cout << (*curorg)->fitness << " species: " << (*curorg)->species->id<< "\t";
 			}
 			oFile.close();
+			for (curorg = (pop->organisms).begin(); curorg != pop->organisms.end(); ++curorg) {
+				take_action(*curorg);
+				if((*curorg)->fitness <= -1) {
+					(*curorg)->fitness = -1000000;
+					pop->remove_worst();
+					offspring_count++;
+					new_org = (pop->choose_parent_species())->reproduce_one(offspring_count,
+									pop, pop->species);
+					new_org->species->estimate_average();
+				}
+				//cout << (*curorg)->fitness << " species: " << (*curorg)->species->id<< "\t";
+			}
 			//cout << endl;
-			Sleep(15);
+			Sleep(20);
 		}
 
 		//Remove the worst organism
@@ -286,8 +287,6 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		}
 	}
     cout << "high_fit_id is " << high_fit_id <<endl; // the highest fitness org id
-    test_time();
 	return high_fit_id;
-
 }
 

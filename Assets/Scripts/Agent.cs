@@ -125,8 +125,8 @@ public class Agent : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-        if (died)
-            return;
+        //if (died)
+        //    return;
 
         // change agent color based on the food level
         transform.GetComponent<Renderer>().material.color = new Color((100.0f - foodLevel) / 100, foodLevel / 100.0f, 0);

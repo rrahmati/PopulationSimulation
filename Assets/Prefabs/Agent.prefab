@@ -157,7 +157,7 @@ MonoBehaviour:
   ID: 0
   species: 0
   foodLevel: 50
-  foodMaxLevel: 100
+  foodMaxLevel: 10000
   foodGaveAway: 0
   foodLevelDPS: .100000001
   foodCubeValue: 2
@@ -249,6 +249,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: foodGiveAwayChunk
       value: .5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: foodMaxLevel
+      value: 10000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

@@ -146,17 +146,17 @@ public class WorldController : MonoBehaviour
 
         for (int i = 0; i < agentList.Count; i++)
         {
-            fitnessList[i] = Inclusive_FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>(), hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species], number[((GameObject)agentList[i]).GetComponent<Agent>().species]);
-           // Debug.Log(hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species] + " ||| " + number[((GameObject)agentList[i]).GetComponent<Agent>().species]);
-            //fitnessList[i] = FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>(), 1);
+            //fitnessList[i] = Inclusive_FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>(), hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species], number[((GameObject)agentList[i]).GetComponent<Agent>().species]);
+            // Debug.Log(hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species] + " ||| " + number[((GameObject)agentList[i]).GetComponent<Agent>().species]);
+            fitnessList[i] = FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>(), 1);
             // either Inclusive_FitnessFunction or FitnessFunction 
 
         }
-        if (Time.time - last_check > 30) // every 30 seconds print the information
-        {
-            AVG_fit_generosity_species();
-            last_check = Time.time;
-        }
+        //if (Time.time - last_check > 30) // every 30 seconds print the information
+        //{
+        //    AVG_fit_generosity_species();
+        //    last_check = Time.time;
+        //}
     }
 
    /* double alt_penalize(double giver_old_food_level, double food_granted, double rec_old_food_level, double r)

@@ -36,7 +36,6 @@ class Game {
 	void create_agent(Organism * org);
 	int Game_realtime_loop(Population *pop);
 	bool take_action(Organism *org);
-	void test_time();
 public:
 	Population *Game_test_realtime();
 

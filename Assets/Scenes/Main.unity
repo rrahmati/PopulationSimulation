@@ -698,7 +698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   population: 30
-  currentPop: 7
+  currentPop: 0
   Hamilton_rate: 10
   alpha: 1
   beta: 1
