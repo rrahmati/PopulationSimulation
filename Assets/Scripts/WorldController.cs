@@ -16,7 +16,7 @@ public class WorldController : MonoBehaviour
     public GameObject spawnPoint;
     public GameObject spawnObject;
     public float last_check=0;
-
+    public double pop_fit = 0D;
     private string NNInputFileName = "rtNEAT.1.0.2\\src\\in_out\\Fitness_input";
     private string NNOutputFileName = "rtNEAT.1.0.2\\src\\Fitness_output";
     private string agentIDsFilename = "rtNEAT.1.0.2\\src\\in_out\\agentIDs";
@@ -125,10 +125,26 @@ public class WorldController : MonoBehaviour
         // get data from each agent
         double[] fitnessList = new double[agentList.Count];
 
+        Dictionary<int, double> hashtable = new Dictionary<int, double>() ;
+        Dictionary<int, int> number = new Dictionary<int, int>();
+
+        for (int i = 0; i < agentList.Count; i++) {
+            if (hashtable.ContainsKey(((GameObject)agentList[i]).GetComponent<Agent>().species))
+                hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species] += ((GameObject)agentList[i]).GetComponent<Agent>().fitness;
+            else
+                hashtable.Add(((GameObject)agentList[i]).GetComponent<Agent>().species, ((GameObject)agentList[i]).GetComponent<Agent>().fitness);
+
+            if (number.ContainsKey(((GameObject)agentList[i]).GetComponent<Agent>().species))
+                number[((GameObject)agentList[i]).GetComponent<Agent>().species] += 1;
+            else
+                hashtable.Add(((GameObject)agentList[i]).GetComponent<Agent>().species, 1);
+        }
+        
+
         for (int i = 0; i < agentList.Count; i++)
         {
-            fitnessList[i] = Inclusive_FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>());
-           // fitnessList[i] = FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>(), 1);
+            fitnessList[i] = Inclusive_FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>(), hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species], number[((GameObject)agentList[i]).GetComponent<Agent>().species]);
+            //fitnessList[i] = FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>(), 1);
             // either Inclusive_FitnessFunction or FitnessFunction 
 
         }
@@ -177,25 +193,25 @@ public class WorldController : MonoBehaviour
         return fitness;
     }
 
-    double Inclusive_FitnessFunction(Agent agentScript)
+    double Inclusive_FitnessFunction(Agent agentScript, double same_sp, int n)
     {
         double eps = 0.000001D;
         double fit = FitnessFunction(agentScript, 0);
         double r = 0.5;
         double same_sp_fit = 0D; //same_sp_fit would be the sum of fitness of those agent with the same species as agentScript
         double pop_fit = 0D; // sum of fitness of whole population
-        for (int i = 0; i < agentList.Count; i++)
+       /* for (int i = 0; i < agentList.Count; i++)
         {
             if (((GameObject)agentList[i]).GetComponent<Agent>().species == agentScript.species)
                 same_sp_fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness; // I am not sure whether these fitness are already updated or not
             pop_fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness;
-            Debug.Log(((GameObject)agentList[i]).GetComponent<Agent>().fitness + " ^" );
-        }
+           // Debug.Log(((GameObject)agentList[i]).GetComponent<Agent>().fitness + " ^" );
+        }*/
         if (pop_fit < eps)
             pop_fit = 1;
-        double inc_fitn = fit + r * same_sp_fit / pop_fit;
+        double inc_fitn = fit + r * same_sp_fit / (pop_fit * n); // n is number of agents in the same sp
         agentScript.fitness = inc_fitn;
-       // Debug.Log(fit + " ###### " + same_sp_fit + " " + pop_fit);
+        Debug.Log("fit= "+fit + " ###### inc= " + inc_fitn + " " + r * same_sp_fit / (pop_fit * n));
         return inc_fitn;
     }
     void AVG_fit_generosity_species()

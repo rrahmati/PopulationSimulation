@@ -15,6 +15,7 @@ public class Agent : MonoBehaviour {
     public int hamiltonSatisfied = 0;
     public double eps = 0.000001D;
     public double fitness = 0D;
+    
     public float lifeTime = 0;
     private float time = 0;
 

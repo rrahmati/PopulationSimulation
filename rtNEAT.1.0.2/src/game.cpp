@@ -254,7 +254,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		string outfilename = "src\\in_out\\agentIDs";
 
 		// take action multiple times before removing the worst organism
-		for(int i = 0; i < 200; i++) {
+		for(int i = 0; i < 100; i++) {
 			ofstream oFile(outfilename.c_str(), ios::out);
 			// print fitness of each agent and take action
 			//cout << "Fitness: ";
@@ -265,7 +265,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 			}
 			oFile.close();
 			//cout << endl;
-			Sleep(20);
+			Sleep(15);
 		}
 
 		//Remove the worst organism
