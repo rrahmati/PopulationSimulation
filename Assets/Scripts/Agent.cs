@@ -66,8 +66,10 @@ public class Agent : MonoBehaviour {
 
 	public float last_time_food = 0;
 
-    public float arrowPeriod = 0.5f;
-	
+    public float arrowPeriod = 10f;
+    float arrowTimer = 0f;
+    GameObject arrowTarget;
+
     // Use this for initialization
     void Start() {
         last_time_food = Time.time;
@@ -220,6 +222,12 @@ public class Agent : MonoBehaviour {
                     GiveFood(agentScript);
             }
         }
+
+        if (arrowTarget != null && arrowTimer > 0f) {
+            DrawArrowTo(arrowTarget);
+            arrowTimer -= Time.deltaTime;
+        }
+
         //inputArray[numRaycast + 2 * numPieSlice + 2] = Check_hamilton(foodLevel, species, detected_agent_food_level, sp);
 
         // no need to reset output array since
@@ -277,14 +285,20 @@ public class Agent : MonoBehaviour {
         else
             Debug.Log("Agent " + ID + " gave " + foodGiveAway + " food to the Agent " + other.ID);
 
-        Debug.DrawRay(transform.position, other.transform.position - transform.position, Color.blue, arrowPeriod);
-        Vector3 tail = transform.position - other.transform.position;
-        Debug.DrawRay(other.transform.position, Quaternion.AngleAxis(-30, Vector3.up) * tail.normalized, Color.blue, arrowPeriod);
-        Debug.DrawRay(other.transform.position, Quaternion.AngleAxis(30, Vector3.up) * tail.normalized, Color.blue, arrowPeriod);
-
+        arrowTarget = other.gameObject;
+        arrowTimer = arrowPeriod;
+        
         other.foodLevel = Mathf.Min(foodMaxLevel, other.foodLevel + foodGiveAway);
         foodLevel -= foodGiveAway;
         foodGaveAway += foodGiveAway;
+    }
+
+    void DrawArrowTo(GameObject other) {
+        Debug.DrawRay(transform.position, other.transform.position - transform.position, Color.blue);
+        Vector3 tail = transform.position - other.transform.position;
+        Vector3 middle = new Vector3(other.transform.position.x / 2, other.transform.position.y, other.transform.position.z/2);
+        Debug.DrawRay(middle, Quaternion.AngleAxis(-30, Vector3.up) * tail.normalized, Color.blue);
+        Debug.DrawRay(middle, Quaternion.AngleAxis(30, Vector3.up) * tail.normalized, Color.blue);
     }
 
 
