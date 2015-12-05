@@ -130,20 +130,24 @@ public class WorldController : MonoBehaviour
 
         for (int i = 0; i < agentList.Count; i++) {
             if (hashtable.ContainsKey(((GameObject)agentList[i]).GetComponent<Agent>().species))
+            {
                 hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species] += ((GameObject)agentList[i]).GetComponent<Agent>().fitness;
+                //Debug.Log(hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species] + " !!!!!!!  " + ((GameObject)agentList[i]).GetComponent<Agent>().fitness);
+            }
             else
                 hashtable.Add(((GameObject)agentList[i]).GetComponent<Agent>().species, ((GameObject)agentList[i]).GetComponent<Agent>().fitness);
 
             if (number.ContainsKey(((GameObject)agentList[i]).GetComponent<Agent>().species))
                 number[((GameObject)agentList[i]).GetComponent<Agent>().species] += 1;
             else
-                hashtable.Add(((GameObject)agentList[i]).GetComponent<Agent>().species, 1);
+                number.Add(((GameObject)agentList[i]).GetComponent<Agent>().species, 1);
         }
         
 
         for (int i = 0; i < agentList.Count; i++)
         {
             fitnessList[i] = Inclusive_FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>(), hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species], number[((GameObject)agentList[i]).GetComponent<Agent>().species]);
+           // Debug.Log(hashtable[((GameObject)agentList[i]).GetComponent<Agent>().species] + " ||| " + number[((GameObject)agentList[i]).GetComponent<Agent>().species]);
             //fitnessList[i] = FitnessFunction(((GameObject)agentList[i]).GetComponent<Agent>(), 1);
             // either Inclusive_FitnessFunction or FitnessFunction 
 
@@ -198,8 +202,8 @@ public class WorldController : MonoBehaviour
         double eps = 0.000001D;
         double fit = FitnessFunction(agentScript, 0);
         double r = 0.5;
-        double same_sp_fit = 0D; //same_sp_fit would be the sum of fitness of those agent with the same species as agentScript
-        double pop_fit = 0D; // sum of fitness of whole population
+     //   double same_sp_fit = 0D; //same_sp_fit would be the sum of fitness of those agent with the same species as agentScript
+      //  double pop_fit = 0D; // sum of fitness of whole population
        /* for (int i = 0; i < agentList.Count; i++)
         {
             if (((GameObject)agentList[i]).GetComponent<Agent>().species == agentScript.species)
@@ -209,9 +213,9 @@ public class WorldController : MonoBehaviour
         }*/
         if (pop_fit < eps)
             pop_fit = 1;
-        double inc_fitn = fit + r * same_sp_fit / (pop_fit * n); // n is number of agents in the same sp
+        double inc_fitn = fit + r * same_sp / (pop_fit * n); // n is number of agents in the same sp
         agentScript.fitness = inc_fitn;
-        Debug.Log("fit= "+fit + " ###### inc= " + inc_fitn + " " + r * same_sp_fit / (pop_fit * n));
+        Debug.Log("fit= " + fit + " ###### " + " " + (r * same_sp / (pop_fit * n)) + " " + (r * (same_sp / (pop_fit ))) + " "+n);
         return inc_fitn;
     }
     void AVG_fit_generosity_species()
@@ -240,7 +244,7 @@ public class WorldController : MonoBehaviour
             }
             fit /= np;
             generosity /= np;
-            Debug.Log(s + " avg_fit= " + fit + " avg_generosity= " + generosity);
+            //Debug.Log(s + " avg_fit= " + fit + " avg_generosity= " + generosity);
         }
         Debug.Log("finished");
 
