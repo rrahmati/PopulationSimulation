@@ -246,7 +246,7 @@ public class Agent : MonoBehaviour {
         // set food level to 0 and fitness to -1
         // so it can be replaced by other
         if (transform.position.y < 0) {
-            foodLevel = 0;
+            foodLevel = -1;
             fitness = -1;
         }
         // save input to file
