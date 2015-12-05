@@ -14,7 +14,7 @@ public class Agent : MonoBehaviour {
     public float food_granted = 4f; // two cubes of food // it should be enough to be helpful rather than a waste
     public int hamiltonSatisfied = 0;
     public double eps = 0.000001D;
-    public double fitness;
+    public double fitness = 0D;
     public float lifeTime = 0;
     private float time = 0;
 
@@ -40,7 +40,7 @@ public class Agent : MonoBehaviour {
     public double[] inputArray;
     private int inputsPerPieSlice = 2;
     private int inputsPerRaycast = 1;
-    private int extraInputs = 3;
+    private int extraInputs = 2;
 
 
     // output from neural network
@@ -105,7 +105,7 @@ public class Agent : MonoBehaviour {
     }
 
     float Check_hamilton(float giver_foodL, int giver_sp, double rec_foodL, int rec_sp) {
-        if (rec_sp == -1 || giver_sp != rec_sp /*|| giver_foodL < food_granted*/) // the detected obj is not an agent or two agents not in the same specious or ... --> donate should not happen
+        if (rec_sp == -1 || giver_sp != rec_sp || giver_foodL <= 0/*|| giver_foodL < food_granted*/) // the detected obj is not an agent or two agents not in the same specious or ... --> donate should not happen
             return 0f; // if Hamiltonian is not satisfied
        // giver_foodL += eps;
         rec_foodL += eps;
@@ -118,7 +118,7 @@ public class Agent : MonoBehaviour {
         if (B - 0.6 * C >= 0)
             hamiltonSatisfied = 1;
         else hamiltonSatisfied = 0;
-        Debug.Log(rec_foodL + " "+giver_foodL+ " "+ B + " ****** " + C + " " + (B - 0.7 * C));
+       // Debug.Log(rec_foodL + " "+giver_foodL+ " "+ B + " ****** " + C + " " + (B - 0.7 * C));
         return hamiltonSatisfied;
     }
     // Update is called once per frame
@@ -158,7 +158,7 @@ public class Agent : MonoBehaviour {
                 if (hits[i].transform.gameObject.tag == "Wall") {
                     // high activation when closer to the wall
                     inputArray[i] = (rayRange - hits[i].distance) / rayRange;
-                    Debug.Log("ID#: " + ID + " Ray#: " + i + " Tag: " + hits[i].transform.gameObject.tag);
+                 //   Debug.Log("ID#: " + ID + " Ray#: " + i + " Tag: " + hits[i].transform.gameObject.tag);
                 }
             }
             // no hit? set everything related to zero
@@ -280,11 +280,11 @@ public class Agent : MonoBehaviour {
 
         // if agent ever five away food, we really want to know
         // especially if it is a self sacrifice action
-        if (foodGiveAway < food_granted)
+      /*  if (foodGiveAway < food_granted)
             Debug.Log("Agent " + ID + " sacrificed its life for the Agent " + other.ID);
         else
             Debug.Log("Agent " + ID + " gave " + foodGiveAway + " food to the Agent " + other.ID);
-
+        */
         arrowTarget = other.gameObject;
         arrowTimer = arrowPeriod;
         
@@ -351,7 +351,7 @@ public class Agent : MonoBehaviour {
         }
         catch
         {
-            print("Could not read the input file.");
+          //  print("Could not read the input file.");
         }
     }
 

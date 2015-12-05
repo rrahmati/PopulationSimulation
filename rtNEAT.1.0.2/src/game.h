@@ -26,7 +26,7 @@ class Game {
 
 	static const int NUM_RAYCASTS = 3;
 	static const int NUM_PIESLICES = 5;
-	static const int NUM_INPUTS = NUM_RAYCASTS * 1 + NUM_PIESLICES * 2 + 4;
+	static const int NUM_INPUTS = NUM_RAYCASTS * 1 + NUM_PIESLICES * 2 + 3;
 	static const int NUM_OUTPUTS = 3;
 
 	Population *game_test(int gens);
