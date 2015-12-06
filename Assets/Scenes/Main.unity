@@ -708,6 +708,9 @@ MonoBehaviour:
   last_check: 0
   pop_fit: 0
   EvaluationRateInSec: 2
+  ExportAllData: 0
+  DataGatheringInteval: 5
+  dataTimer: 0
 --- !u!114 &546583554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -722,7 +725,7 @@ MonoBehaviour:
   spawnObject: {fileID: 137114, guid: fbb423f64f79cc0409296ecba457ecef, type: 2}
   timeInterval: .00999999978
   time: 1
-  foodAmountLimit: 30
+  foodAmountLimit: 50
   deviationFromOrigin: 80
 --- !u!4 &565662643
 Transform:

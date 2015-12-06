@@ -135,6 +135,7 @@ public class WorldController : MonoBehaviour
         
 
         lines += "Time Stamp,Average Food Level,Avage Fitness,Avage Life Time,Avage Food Gave Away,"+
+            "Avg Food Gave Away/AVG lifetime," +
             "Max Fitness,Max Fitness Life Time,Max Fitness Food Gave Away," + 
             "Max Generous Fitness,Max Generous Life Time,Max Generous," +
             "Max Life Time Fitness,Max Life Time,Max Life Time Food Gave Away\n";
@@ -142,7 +143,7 @@ public class WorldController : MonoBehaviour
         for (int i = 0; i < DataList.Count; i++) {
             Data exData = (Data)DataList[i];
             lines += exData.TimeStamp + "," + exData.AvgFoodLevel + "," +
-                exData.AvgFitness + "," + exData.AvgLifeTime + "," + exData.AvgFoodGaveAway + "," +
+                exData.AvgFitness + "," + exData.AvgLifeTime + "," + exData.AvgFoodGaveAway + "," + (exData.AvgFoodGaveAway /exData.AvgLifeTime) + "," +
                 exData.MaxFitness + "," + exData.MaxFitnessLifeTime + "," + exData.MaxFitnessGenerosity + "," +
                 exData.MaxGenerousFitness + "," + exData.MaxGenerousLifeTime + "," + exData.MaxGenerous + "," +
                 exData.MaxLifeTimeFitness + "," + exData.MaxLifeTime + "," + exData.MaxLifeTimeGenerosity + "\n";

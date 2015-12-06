@@ -157,16 +157,16 @@ MonoBehaviour:
   ID: 0
   species: 0
   foodLevel: 50
-  foodMaxLevel: 10000
+  foodMaxLevel: 1000
   foodGaveAway: 0
-  foodLevelDPS: .100000001
+  foodLevelDPS: .200000003
   foodCubeValue: 2
-  food_granted: 4
+  food_granted: 1
   hamiltonSatisfied: 0
   eps: 9.9999999999999995e-07
   fitness: 0
   lifeTime: 0
-  moveSpeed: 30
+  moveSpeed: 15
   rotateSpeed: 70
   coneDegree: 120
   numRaycast: 3
@@ -208,7 +208,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: moveSpeed
-      value: 30
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalScale.x
@@ -224,7 +224,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodLevelDPS
-      value: .100000001
+      value: .200000003
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodLevel
@@ -252,7 +252,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodMaxLevel
-      value: 10000
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: food_granted
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
