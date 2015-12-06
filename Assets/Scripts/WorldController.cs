@@ -83,6 +83,7 @@ public class WorldController : MonoBehaviour
 
         for (int i = 0; i < agentList.Count; i++) {
             Agent agentScript = ((GameObject)agentList[i]).GetComponent<Agent>();
+            exData.AvgFoodLevel += agentScript.foodLevel;
             exData.AvgFitness += agentScript.fitness;
             exData.AvgLifeTime += agentScript.lifeTime;
             exData.AvgFoodGaveAway += agentScript.foodGaveAway;
@@ -100,6 +101,7 @@ public class WorldController : MonoBehaviour
             }
         }
 
+        exData.AvgFoodLevel /= agentList.Count;
         exData.AvgFitness /= agentList.Count;
         exData.AvgLifeTime /= agentList.Count;
         exData.AvgFoodGaveAway /= agentList.Count;
@@ -132,14 +134,14 @@ public class WorldController : MonoBehaviour
         string lines = "";
         
 
-        lines += "Time Stamp,Avage Fitness,Avage Life Time,Avage Food Gave Away,"+
+        lines += "Time Stamp,Average Food Level,Avage Fitness,Avage Life Time,Avage Food Gave Away,"+
             "Max Fitness,Max Fitness Life Time,Max Fitness Food Gave Away," + 
             "Max Generous Fitness,Max Generous Life Time,Max Generous," +
             "Max Life Time Fitness,Max Life Time,Max Life Time Food Gave Away\n";
         
         for (int i = 0; i < DataList.Count; i++) {
             Data exData = (Data)DataList[i];
-            lines += exData.TimeStamp + "," + 
+            lines += exData.TimeStamp + "," + exData.AvgFoodLevel + "," +
                 exData.AvgFitness + "," + exData.AvgLifeTime + "," + exData.AvgFoodGaveAway + "," +
                 exData.MaxFitness + "," + exData.MaxFitnessLifeTime + "," + exData.MaxFitnessGenerosity + "," +
                 exData.MaxGenerousFitness + "," + exData.MaxGenerousLifeTime + "," + exData.MaxGenerous + "," +
@@ -395,6 +397,7 @@ public class WorldController : MonoBehaviour
     private class Data {
         public double TimeStamp = 0;
 
+        public double AvgFoodLevel = 0;
         public double AvgFitness = 0;
         public double AvgLifeTime = 0;
         public double AvgFoodGaveAway = 0;
