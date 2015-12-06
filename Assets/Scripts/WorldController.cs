@@ -22,16 +22,25 @@ public class WorldController : MonoBehaviour
     private string agentIDsFilename = "rtNEAT.1.0.2\\src\\in_out\\agentIDs";
 
     public ArrayList agentList;
+    public ArrayList DataList;
+
 
     public float EvaluationRateInSec = 30;
     private float timer = 0;
 
     private double[] fitnessList;
 
+    public bool ExportAllData = false;
+    public float DataGatheringInteval = 5f;
+    public float dataTimer = 0;
+    private string ExportDataFileName = "rtNEAT.1.0.2\\src\\in_out\\Experiment_Data";
+
+
     // Use this for initialization
     void Start()
     {
         agentList = new ArrayList();
+        DataList = new ArrayList();
     }
 
     // Update is called once per frame
@@ -44,8 +53,104 @@ public class WorldController : MonoBehaviour
             EvaluatePopulation();
         }
 
+        if (dataTimer > DataGatheringInteval) {
+            GatherData();
+            dataTimer -= DataGatheringInteval;
+        }
+        if (ExportAllData) {
+            ExportData();
+            ExportAllData = false;
+        }
+
+        dataTimer += Time.deltaTime;
         timer += Time.deltaTime;
 
+    }
+
+    void GatherData() {
+
+        
+        double maxFitness = -1;
+        double maxFoodGaveAway = -1;
+        double maxLifeTime = -1;
+        Data exData = new Data();
+
+        Agent maxFitnessAgent = null;
+        Agent maxFoodGaveAwayAgent = null;
+        Agent maxLifeTimeAgent = null;
+
+        exData.TimeStamp = Time.time;
+
+        for (int i = 0; i < agentList.Count; i++) {
+            Agent agentScript = ((GameObject)agentList[i]).GetComponent<Agent>();
+            exData.AvgFitness += agentScript.fitness;
+            exData.AvgLifeTime += agentScript.lifeTime;
+            exData.AvgFoodGaveAway += agentScript.foodGaveAway;
+            if (agentScript.fitness > maxFitness) {
+                maxFitness = agentScript.fitness;
+                maxFitnessAgent = agentScript;
+            }
+            if (agentScript.foodGaveAway > maxFoodGaveAway) {
+                maxFoodGaveAway = agentScript.foodGaveAway;
+                maxFoodGaveAwayAgent = agentScript;
+            }
+            if (agentScript.lifeTime > maxLifeTime) {
+                maxLifeTime = agentScript.lifeTime;
+                maxLifeTimeAgent = agentScript;
+            }
+        }
+
+        exData.AvgFitness /= agentList.Count;
+        exData.AvgLifeTime /= agentList.Count;
+        exData.AvgFoodGaveAway /= agentList.Count;
+
+        if (maxFitnessAgent != null) {
+            exData.MaxFitness = maxFitness;
+            exData.MaxFitnessLifeTime = maxFitnessAgent.lifeTime;
+            exData.MaxFitnessGenerosity = maxFitnessAgent.foodGaveAway;
+        }
+        if (maxFoodGaveAwayAgent != null) {
+            exData.MaxGenerousFitness = maxFoodGaveAwayAgent.fitness;
+            exData.MaxGenerousLifeTime = maxFoodGaveAwayAgent.lifeTime;
+            exData.MaxGenerous = maxFoodGaveAway;
+        }
+        if (maxLifeTimeAgent != null) {
+            exData.MaxLifeTimeFitness = maxLifeTimeAgent.fitness;
+            exData.MaxLifeTime = maxLifeTime;
+            exData.MaxLifeTimeGenerosity = maxLifeTimeAgent.foodGaveAway;
+        }
+
+        
+        DataList.Add(exData);
+    }
+
+    void ExportData() {
+        string path = ExportDataFileName + "_" + Time.time + "_.csv";
+        //print(path);
+        StreamWriter file = new StreamWriter(path);
+
+        string lines = "";
+        
+
+        lines += "Time Stamp,Avage Fitness,Avage Life Time,Avage Food Gave Away,"+
+            "Max Fitness,Max Fitness Life Time,Max Fitness Food Gave Away," + 
+            "Max Generous Fitness,Max Generous Life Time,Max Generous," +
+            "Max Life Time Fitness,Max Life Time,Max Life Time Food Gave Away\n";
+        
+        for (int i = 0; i < DataList.Count; i++) {
+            Data exData = (Data)DataList[i];
+            lines += exData.TimeStamp + "," + 
+                exData.AvgFitness + "," + exData.AvgLifeTime + "," + exData.AvgFoodGaveAway + "," +
+                exData.MaxFitness + "," + exData.MaxFitnessLifeTime + "," + exData.MaxFitnessGenerosity + "," +
+                exData.MaxGenerousFitness + "," + exData.MaxGenerousLifeTime + "," + exData.MaxGenerous + "," +
+                exData.MaxLifeTimeFitness + "," + exData.MaxLifeTime + "," + exData.MaxLifeTimeGenerosity + "\n";
+        }
+        
+        
+        file.WriteLine(lines);
+
+        file.Close();
+    
     }
 
     void SpawnAgent(int ID, int sp)
@@ -285,5 +390,30 @@ public class WorldController : MonoBehaviour
 
         }
         //print(outputArray);
+    }
+
+    private class Data {
+        public double TimeStamp = 0;
+
+        public double AvgFitness = 0;
+        public double AvgLifeTime = 0;
+        public double AvgFoodGaveAway = 0;
+        //public float AvgFoodReceived = 0;
+
+
+        public double MaxFitness = 0;
+        public double MaxFitnessLifeTime = 0;
+        public double MaxFitnessGenerosity = 0;
+
+
+        public double MaxGenerousFitness = 0;
+        public double MaxGenerousLifeTime = 0;
+        public double MaxGenerous = 0;
+
+        public double MaxLifeTimeFitness = 0;
+        public double MaxLifeTime = 0;
+        public double MaxLifeTimeGenerosity = 0;
+
+
     }
 }
