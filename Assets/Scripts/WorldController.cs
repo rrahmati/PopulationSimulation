@@ -12,7 +12,7 @@ public class WorldController : MonoBehaviour
     public float Hamilton_rate = 10;
     public float alpha = 1;
     public float beta = 1;
-    public float deviationFromOrigin = 80;
+    public float deviationFromOrigin = 40;
     public GameObject spawnPoint;
     public GameObject spawnObject;
     public float last_check=0;
@@ -173,16 +173,7 @@ public class WorldController : MonoBehaviour
             Agent script = gameObj.GetComponent<Agent>();
             script.ID = ID;
             script.species = sp;
-            for (int i = 0; i < agentList.Count; i++)
-            {
-                Agent agentScript = ((GameObject)agentList[i]).GetComponent<Agent>();
-                script.foodLevel += agentScript.foodLevel;
-            }
-            if(agentList.Count > 0)
-            {
-                script.foodLevel /= agentList.Count;
-            }
-            
+
             agentList.Add(gameObj);
             currentPop++;
         }
@@ -308,8 +299,7 @@ public class WorldController : MonoBehaviour
         //Debug.Log(Time.time - agentScript.last_time_food );
 
         double fitness = alpha * food_level - beta * recent - penalty;
-        //double fitness = alpha * food_level/(age/300+1);
-        if (s==1)
+        if(s==1)
             agentScript.fitness = fitness;
         agentScript.hamiltonSatisfied = agentScript.species * 1;
         return fitness;
