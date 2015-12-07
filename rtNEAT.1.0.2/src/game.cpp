@@ -182,7 +182,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 
 	//Now create offspring one at a time, testing each offspring,
 	// and replacing the worst with the new offspring if its better
-	for (offspring_count = 0; offspring_count < 20000; offspring_count++) {
+	for (offspring_count = 0; offspring_count < 200000; offspring_count++) {
 
 		//Every pop_size reproductions, adjust the compat_thresh to better match the num_species_targer
 		//and reassign the population to new species

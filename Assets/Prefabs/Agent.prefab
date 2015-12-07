@@ -156,7 +156,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 0
   species: 0
-  foodLevel: 50
+  foodLevel: 1
   foodMaxLevel: 1000
   foodGaveAway: 0
   foodLevelDPS: .200000003
@@ -166,7 +166,7 @@ MonoBehaviour:
   eps: 9.9999999999999995e-07
   fitness: 0
   lifeTime: 0
-  moveSpeed: 15
+  moveSpeed: 20
   rotateSpeed: 70
   coneDegree: 120
   numRaycast: 3
@@ -208,7 +208,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: moveSpeed
-      value: 15
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalScale.x
@@ -228,7 +228,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodLevel
-      value: 50
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodCubeValue

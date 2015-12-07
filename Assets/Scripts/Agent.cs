@@ -106,7 +106,7 @@ public class Agent : MonoBehaviour {
     }
 
     float Check_hamilton(float giver_foodL, int giver_sp, double rec_foodL, int rec_sp) {
-        if (rec_sp == -1 || giver_sp != rec_sp || giver_foodL <= 0/*|| giver_foodL < food_granted*/) // the detected obj is not an agent or two agents not in the same specious or ... --> donate should not happen
+        if (rec_sp == -1 /*|| giver_sp != rec_sp || giver_foodL <= 0 || giver_foodL < food_granted*/) // the detected obj is not an agent or two agents not in the same specious or ... --> donate should not happen
             return 0f; // if Hamiltonian is not satisfied
        // giver_foodL += eps;
         rec_foodL += eps;
