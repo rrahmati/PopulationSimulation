@@ -300,9 +300,10 @@ public class Agent : MonoBehaviour {
     }
 
     void DrawArrowTo(GameObject other) {
-        Debug.DrawRay(transform.position, other.transform.position - transform.position, Color.blue);
+        Vector3 dir = other.transform.position - transform.position;
+        Debug.DrawRay(transform.position, dir, Color.blue);
         Vector3 tail = transform.position - other.transform.position;
-        Vector3 middle = new Vector3(other.transform.position.x / 2, other.transform.position.y, other.transform.position.z/2);
+        Vector3 middle = (transform.position + dir/2);
         Debug.DrawRay(middle, Quaternion.AngleAxis(-30, Vector3.up) * tail.normalized, Color.blue);
         Debug.DrawRay(middle, Quaternion.AngleAxis(30, Vector3.up) * tail.normalized, Color.blue);
     }
