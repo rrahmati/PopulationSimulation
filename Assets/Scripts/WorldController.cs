@@ -25,7 +25,7 @@ public class WorldController : MonoBehaviour
     public ArrayList DataList;
 
 
-    public float EvaluationRateInSec = 30;
+    public float EvaluationRateInSec = 3;
     private float timer = 0;
 
     private double[] fitnessList;
@@ -34,6 +34,7 @@ public class WorldController : MonoBehaviour
     public float DataGatheringInteval = 5f;
     public float dataTimer = 0;
     private string ExportDataFileName = "rtNEAT.1.0.2\\src\\in_out\\Experiment_Data";
+    double avgFitness = 0;
 
 
     // Use this for initialization
@@ -51,6 +52,7 @@ public class WorldController : MonoBehaviour
         if (timer > EvaluationRateInSec)
         {
             EvaluatePopulation();
+            timer = 0;
         }
 
         if (dataTimer > DataGatheringInteval) {
@@ -173,16 +175,23 @@ public class WorldController : MonoBehaviour
             Agent script = gameObj.GetComponent<Agent>();
             script.ID = ID;
             script.species = sp;
+            avgFitness = 0f;
+            double avgAge = 0f;
             for (int i = 0; i < agentList.Count; i++)
             {
                 Agent agentScript = ((GameObject)agentList[i]).GetComponent<Agent>();
-                script.foodLevel += agentScript.foodLevel;
+                avgFitness += agentScript.fitness;
+                avgAge += agentScript.lifeTime;
             }
-            if(agentList.Count > 0)
+            if (agentList.Count > 0)
             {
-                script.foodLevel /= agentList.Count;
+                avgFitness /= agentList.Count;
+                avgAge /= agentList.Count;
             }
-            
+            //script.foodLevel = (float)(avgFitness / 12);
+            if(avgFitness > 0)
+                script.foodLevel = (float)(avgFitness);
+
             agentList.Add(gameObj);
             currentPop++;
         }
@@ -307,8 +316,13 @@ public class WorldController : MonoBehaviour
         //   Debug.Log(Time.time );
         //Debug.Log(Time.time - agentScript.last_time_food );
 
-        double fitness = alpha * food_level - beta * recent - penalty;
-        //double fitness = alpha * food_level/(age/300+1);
+        //double fitness = alpha * food_level - beta * recent - penalty;
+        //double fitness = alpha * food_level /(age /60 + 1);
+        double fitness = alpha * food_level;
+        //if (agentScript.lifeTime < 30)
+        //{
+        //    fitness = avgFitness;
+        //}
         if (s==1)
             agentScript.fitness = fitness;
         agentScript.hamiltonSatisfied = agentScript.species * 1;
@@ -329,7 +343,7 @@ public class WorldController : MonoBehaviour
             pop_fit += ((GameObject)agentList[i]).GetComponent<Agent>().fitness;
            // Debug.Log(((GameObject)agentList[i]).GetComponent<Agent>().fitness + " ^" );
         }*/
-        if (pop_fit < eps)
+        if (pop_fit < 1)
             pop_fit = 1;
         double inc_fitn = fit + r * same_sp / (pop_fit * n); // n is number of agents in the same sp
         agentScript.fitness = inc_fitn;
