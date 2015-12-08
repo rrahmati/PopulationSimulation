@@ -87,13 +87,13 @@ Population* Game::Game_test_realtime() {
 
 	ifstream iFile("gamestartgenes", ios::in);
 
-	cout << "START Game REAL-TIME EVOLUTION VALIDATION" << endl;
+	//cout << "START Game REAL-TIME EVOLUTION VALIDATION" << endl;
 
-	cout << "Reading in the start genome" << endl;
+	//cout << "Reading in the start genome" << endl;
 	//Read in the start Genome
 	iFile >> curword;
 	iFile >> id;
-	cout << "Reading in Genome id -" <<curword<<"- "<< id << endl;
+	//cout << "Reading in Genome id -" <<curword<<"- "<< id << endl;
 	start_genome = new Genome(id, iFile);
 	iFile.close();
 
@@ -101,13 +101,13 @@ Population* Game::Game_test_realtime() {
 		//	<< start_genome->nodes.size()  << endl;
 
 	//Spawn the Population from starter gene
-	cout << "Spawning Population off Genome " << NEAT::pop_size << endl;
+	//cout << "Spawning Population off Genome " << NEAT::pop_size << endl;
 	pop = new Population(start_genome, NEAT::pop_size);
 
 	//Alternative way to start off of randomly connected genomes
 	//pop=new Population(pop_size,7,1,10,false,0.3);
 
-	cout << "Verifying Spawned Pop" << endl;
+	//cout << "Verifying Spawned Pop" << endl;
 	pop->verify();
 
 	//Create the Cart
@@ -121,6 +121,7 @@ Population* Game::Game_test_realtime() {
 
 int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // return an org with the highest score
 	vector<Organism*>::iterator curorg;
+	cout <<"hereeeeeeeeeeee" << endl;
 	vector<Species*>::iterator curspecies;
 
 	vector<Species*>::iterator curspec; //used in printing out debug info
@@ -149,7 +150,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 
 	//We try to keep the number of species constant at this number
 	int num_species_target = NEAT::pop_size / 5;
-    cout <<"****** pop_size: " << pop_size << " num_species_target: " << num_species_target << endl;
+  //  cout <<"****** pop_size: " << pop_size << " num_species_target: " << num_species_target << endl;
 	//This is where we determine the frequency of compatibility threshold adjustment
 	int compat_adjust_frequency = NEAT::pop_size / 10;
 	if (compat_adjust_frequency < 1)
@@ -157,6 +158,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 
 	//Initially, we evaluate the whole population
 	//Evaluate each organism on a test
+
 	for (curorg = (pop->organisms).begin(); curorg != (pop->organisms).end();
 			++curorg) {
 
@@ -200,7 +202,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 			if (NEAT::compat_threshold < 0.3)
 				NEAT::compat_threshold = 0.3;
 
-			cout << "^^^^^^ compat_thresh = " << NEAT::compat_threshold <<" num_species= " <<num_species << endl;
+			//cout << "^^^^^^ compat_thresh = " << NEAT::compat_threshold <<" num_species= " <<num_species << endl;
           //  cout << "******************" << endl;
 			//Go through entire population, reassigning organisms to new species and print their ID into a file
 
@@ -213,9 +215,9 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		//For printing only
 		for (curspec = (pop->species).begin(); curspec != (pop->species).end();
 				curspec++) {
-			cout << "Species " << (*curspec)->id << " size "
-					<< (*curspec)->organisms.size() << " average fitness= "
-					<< (*curspec)->average_est << endl;
+		//	cout << "Species " << (*curspec)->id << " size "
+				//	<< (*curspec)->organisms.size() << " average fitness= "
+				//	<< (*curspec)->average_est << endl;
 		}
 
 		cout << "Pop size: " << pop->organisms.size() << endl;
@@ -229,7 +231,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		//Now we evaluate the new individual
 		//Note that in a true real-time simulation, evaluation would be happening to all individuals at all times.
 		//That is, this call would not appear here in a true online simulation.
-		cout << "Evaluating new baby: " << endl;
+		//cout << "Evaluating new baby: " << endl;
 		if (take_action(new_org/*, 1, thecart*/))
 			win = true;
 
@@ -243,7 +245,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 		new_org->species->estimate_average();
 
 		string outfilename = "src\\in_out\\agentIDs";
-
+		 Network* net;
 		// take action multiple times before removing the worst organism
 		for(int i = 0; i < 200; i++) {
 			ofstream oFile(outfilename.c_str(), ios::out);
@@ -253,6 +255,8 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 				oFile << (*curorg)->gnome->genome_id << "," << (*curorg)->species->id<<",";
 			}
 			oFile.close();
+			int tnumnodes = 0;
+			int tnet_depth = 0;
 			for (curorg = (pop->organisms).begin(); curorg != pop->organisms.end(); ++curorg) {
 				take_action(*curorg);
 				if((*curorg)->fitness <= -1) {
@@ -263,16 +267,28 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
 									pop, pop->species);
 					new_org->species->estimate_average();
 				}
+
+                net = (*curorg)->net;
+				tnumnodes +=(((*curorg)->gnome)->nodes).size();
+				tnet_depth +=net->max_depth();
+				/*if(net->max_depth() > 1){
+					cout <<"******************** " << net->max_depth() <<endl;
+				//	break;
+				}*/
+
 				//cout << (*curorg)->fitness << " species: " << (*curorg)->species->id<< "\t";
 			}
 			//cout << endl;
 			Sleep(20);
+			tnumnodes /= (pop->organisms).size();
+			tnet_depth /= (pop->organisms).size();
+			cout << "avg_nodes= "<<tnumnodes <<" ############## avg_depth="<< tnet_depth <<endl;
 		}
 
 		//Remove the worst organism
 		pop->remove_worst();
-        cout << "worst has been removed" << endl;
-        cout << "entering the loop" << endl;
+       // cout << "worst has been removed" << endl;
+       // cout << "entering the loop" << endl;
 		for(int i = 0; i < 100; i++){}
 //		std::this_thread::sleep_for (std::chrono::seconds(1));
 //		boost::this_thread::sleep( boost::posix_time::milliseconds(1000) );
@@ -286,7 +302,7 @@ int Game::Game_realtime_loop(Population *pop /*, CartPole *thecart*/) { // retur
                high_fit_id = ((*curorg)->gnome)->genome_id;
 		}
 	}
-    cout << "high_fit_id is " << high_fit_id <<endl; // the highest fitness org id
+   // cout << "high_fit_id is " << high_fit_id <<endl; // the highest fitness org id
 	return high_fit_id;
 }
 
