@@ -156,12 +156,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 0
   species: 0
-  foodLevel: 50
-  foodMaxLevel: 1000
+  foodLevel: 0
+  foodMaxLevel: 100000
   foodGaveAway: 0
-  foodLevelDPS: .100000001
+  foodLevelDPS: 0
   foodCubeValue: 2
-  food_granted: 0
+  food_granted: 2
   hamiltonSatisfied: 0
   eps: 9.9999999999999995e-07
   fitness: 0
@@ -224,11 +224,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodLevelDPS
-      value: .100000001
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodLevel
-      value: 50
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodCubeValue
@@ -252,11 +252,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: foodMaxLevel
-      value: 1000
+      value: 100000
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: food_granted
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

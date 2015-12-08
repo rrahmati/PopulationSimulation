@@ -725,7 +725,7 @@ MonoBehaviour:
   spawnObject: {fileID: 137114, guid: fbb423f64f79cc0409296ecba457ecef, type: 2}
   timeInterval: .00999999978
   time: 1
-  foodAmountLimit: 50
+  foodAmountLimit: 20
   deviationFromOrigin: 80
 --- !u!4 &565662643
 Transform:

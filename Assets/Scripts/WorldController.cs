@@ -189,8 +189,8 @@ public class WorldController : MonoBehaviour
                 avgAge /= agentList.Count;
             }
             //script.foodLevel = (float)(avgFitness / 12);
-            if(avgFitness > 0)
-                script.foodLevel = (float)(avgFitness);
+            //if(avgFitness > 0)
+            //    script.foodLevel = (float)(avgFitness);
 
             agentList.Add(gameObj);
             currentPop++;
@@ -317,12 +317,12 @@ public class WorldController : MonoBehaviour
         //Debug.Log(Time.time - agentScript.last_time_food );
 
         //double fitness = alpha * food_level - beta * recent - penalty;
-        //double fitness = alpha * food_level /(age /60 + 1);
-        double fitness = alpha * food_level;
-        //if (agentScript.lifeTime < 30)
-        //{
-        //    fitness = avgFitness;
-        //}
+        double fitness = alpha * food_level / (age / 60 + 1);
+        //double fitness = alpha * food_level;
+        if (agentScript.lifeTime < 30)
+        {
+            fitness = avgFitness;
+        }
         if (s==1)
             agentScript.fitness = fitness;
         agentScript.hamiltonSatisfied = agentScript.species * 1;
